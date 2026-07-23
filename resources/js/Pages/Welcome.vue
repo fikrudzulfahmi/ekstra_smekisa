@@ -45,9 +45,10 @@ const highlights = [
 </script>
 
 <template>
-    <Head title="Beranda" />
+    <div>
+        <Head title="Beranda" />
 
-    <div class="min-h-screen bg-white font-['Inter'] text-[#101828] antialiased">
+        <div class="min-h-screen bg-white font-['Inter'] text-[#101828] antialiased">
         <!-- ===== NAVBAR ===== -->
         <header class="fixed inset-x-0 top-0 z-50 bg-[#0B1B36]/80 backdrop-blur-md">
             <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-3 lg:px-8">
@@ -343,6 +344,7 @@ const highlights = [
                 </div>
             </div>
         </footer>
+    </div>
     </div>
 </template>
 
