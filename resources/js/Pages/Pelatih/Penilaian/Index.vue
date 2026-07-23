@@ -34,7 +34,7 @@ const hapus = (item) => {
             </div>
         </template>
 
-        <div class="mx-auto max-w-5xl space-y-4 px-4 py-8 sm:px-6 lg:px-8">
+        <div>
             <div v-for="item in penilaian" :key="item.id"
                 class="flex items-center justify-between gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5 transition hover:shadow-md">
                 <div class="min-w-0 flex-1">

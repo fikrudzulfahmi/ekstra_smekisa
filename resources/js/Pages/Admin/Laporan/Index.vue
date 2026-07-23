@@ -41,7 +41,7 @@ const tutupFoto = () => { fotoModal.value = null; };
     <AuthenticatedLayout>
         <template #header>Laporan Rekap Kegiatan</template>
 
-        <div class="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+        <div>
             <!-- Info Tahun Aktif -->
             <div class="rounded-2xl border border-[#3E6FD9]/20 bg-[#3E6FD9]/5 p-4 text-sm text-[#1B2333]">
                 Tahun Pelajaran Aktif: <b class="text-[#0B1B36]">{{ tahunAktif?.nama ?? '-' }}</b>

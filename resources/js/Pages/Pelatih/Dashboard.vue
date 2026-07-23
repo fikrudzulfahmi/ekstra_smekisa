@@ -12,7 +12,7 @@ const userName = computed(() => page.props.auth?.user?.name);
     <AuthenticatedLayout>
         <template #header>Dashboard Pelatih</template>
 
-        <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+        <div>
             <div class="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-black/5">
                 <h1 class="font-['Poppins'] text-xl font-semibold text-[#0B1B36]">
                     Selamat datang{{ userName ? `, ${userName}` : '' }} 👋

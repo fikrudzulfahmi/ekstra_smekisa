@@ -73,7 +73,7 @@ const hapus = (item) => {
     <AuthenticatedLayout>
         <template #header>Data Siswa</template>
 
-        <div class="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+        <div>
             <!-- Info Tahun Aktif -->
             <div v-if="!tahunAktif" class="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
                 Belum ada tahun pelajaran aktif. Set dulu di menu Tahun Pelajaran.

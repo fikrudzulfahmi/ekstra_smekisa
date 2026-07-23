@@ -61,7 +61,7 @@ const doRestore = () => {
     <AuthenticatedLayout>
         <template #header>Backup & Restore Database</template>
 
-        <div class="mx-auto max-w-5xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+        <div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Card Backup -->

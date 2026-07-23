@@ -38,7 +38,7 @@ const rataRata = computed(() => {
             </div>
         </template>
 
-        <div class="mx-auto max-w-4xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+        <div>
             <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
                 <div class="flex items-start justify-between">
                     <div>
