@@ -19,6 +19,7 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
+        'tahunAktif' => \App\Models\TahunPelajaran::where('is_aktif', true)->value('nama'),
         'stats' => [
             'ekstra' => \App\Models\Ekstra::count(),
             'siswa' => \App\Models\Siswa::count(),
