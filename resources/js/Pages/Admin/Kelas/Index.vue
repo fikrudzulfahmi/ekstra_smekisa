@@ -77,7 +77,7 @@ const hapus = (item) => {
 
             <!-- Tabel -->
             <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
-                <div class="overflow-x-auto">`n<table class="min-w-full divide-y divide-gray-100">
+                <div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-100">
                     <thead class="bg-[#F4F7FC]">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#5B6472]">Nama Kelas</th>
@@ -98,7 +98,7 @@ const hapus = (item) => {
                             <td colspan="2" class="px-6 py-10 text-center text-sm text-[#5B6472]">Belum ada data kelas.</td>
                         </tr>
                     </tbody>
-                </table>`n</div>
+                </table></div>
             </div>
         </div>
     </AuthenticatedLayout>
