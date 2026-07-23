@@ -13,6 +13,12 @@ use Illuminate\Validation\ValidationException;
 class LoginRequest extends FormRequest
 {
     /**
+     * The route to redirect to if validation fails.
+     *
+     * @var string
+     */
+    protected $redirectRoute = 'login';
+    /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
