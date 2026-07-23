@@ -52,7 +52,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             $exception = ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => 'Email atau Password salah.',
             ]);
             
             $exception->redirectTo(route('login'));
