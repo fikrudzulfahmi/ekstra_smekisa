@@ -40,7 +40,7 @@ class KegiatanController extends Controller
 
         // Ekstra yang dilatih oleh pelatih ini
         $daftarEkstra = $pelatih
-            ? $pelatih->ekstra()->get()
+            ? $pelatih->ekstra()->wherePivot('tahun_pelajaran_id', $tahunAktif?->id)->get()
             : collect();
 
         return inertia('Pelatih/Kegiatan/Create', [

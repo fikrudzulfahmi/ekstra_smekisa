@@ -20,7 +20,34 @@ const props = defineProps({
         type: Number,
         default: 0,
     },
+    recentActivities: {
+        type: Array,
+        default: () => [],
+    }
 });
+
+const getBadgeColor = (description) => {
+    switch (description) {
+        case 'created':
+            return 'bg-green-100 text-green-800 border-green-200';
+        case 'updated':
+            return 'bg-blue-100 text-blue-800 border-blue-200';
+        case 'deleted':
+            return 'bg-red-100 text-red-800 border-red-200';
+        case 'login':
+            return 'bg-purple-100 text-purple-800 border-purple-200';
+        default:
+            return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+};
+
+const formatDescription = (desc) => {
+    if (desc === 'created') return 'Ditambahkan';
+    if (desc === 'updated') return 'Diperbarui';
+    if (desc === 'deleted') return 'Dihapus';
+    if (desc === 'login') return 'Login Sistem';
+    return desc;
+};
 
 const page = usePage();
 const userName = computed(() => page.props.auth?.user?.name);
@@ -131,11 +158,43 @@ const stats = computed(() => [
             <div class="mt-10">
                 <div class="mb-4 flex items-center justify-between">
                     <h2 class="font-['Poppins'] text-lg font-semibold text-[#0B1B36]">
-                        Log Aktivitas
+                        Log Aktivitas Terbaru
                     </h2>
                 </div>
 
-                <div class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#D8E1F0] bg-white/60 px-6 py-14 text-center">
+                <div v-if="recentActivities.length > 0" class="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                            <tr>
+                                <th class="px-4 py-3">Waktu</th>
+                                <th class="px-4 py-3">Pengguna</th>
+                                <th class="px-4 py-3">Aksi</th>
+                                <th class="px-4 py-3">Objek Target</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="log in recentActivities" :key="log.id" class="border-b hover:bg-gray-50">
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    {{ log.created_at }}
+                                </td>
+                                <td class="px-4 py-3 font-medium text-gray-900">
+                                    {{ log.causer_name }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span :class="['px-2 py-1 text-xs font-semibold rounded-full border', getBadgeColor(log.description)]">
+                                        {{ formatDescription(log.description) }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span v-if="log.subject_type" class="font-semibold text-gray-700">{{ log.subject_type }} #{{ log.subject_id }}</span>
+                                    <span v-else class="text-gray-400">-</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div v-else class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#D8E1F0] bg-white/60 px-6 py-14 text-center">
                     <div class="flex h-12 w-12 items-center justify-center rounded-full bg-[#F4F7FC]">
                         <svg class="h-6 w-6 text-[#6C82AC]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 7h6m-6 4h6" />

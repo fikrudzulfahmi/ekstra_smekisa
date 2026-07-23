@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Siswa extends Model
 {
+    use LogsActivity;
+
     protected $table = 'siswa';
     protected $guarded = [];
 
@@ -24,5 +28,17 @@ class Siswa extends Model
     public function presensi()
     {
         return $this->hasMany(Presensi::class);
+    }
+    public function detailPenilaian()
+    {
+        return $this->hasMany(DetailPenilaian::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }

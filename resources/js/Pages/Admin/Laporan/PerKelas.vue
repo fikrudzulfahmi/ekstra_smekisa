@@ -30,6 +30,18 @@ const terapkan = () => {
 
 const cetak = () => window.print();
 
+const exportExcel = () => {
+    if (!filter.kelas_id) {
+        alert('Pilih kelas dulu.');
+        return;
+    }
+    // Buka di tab baru supaya halaman laporan tidak ikut ter-reload
+    window.open(
+        route('admin.laporan.per-kelas.export', { ...filter }),
+        '_blank'
+    );
+};
+
 const persentase = (item) => {
     if (item.total_count === 0) return 0;
     return Math.round((item.hadir_count / item.total_count) * 100);
@@ -93,10 +105,16 @@ const formatTgl = (t) =>
                             &bull; Tahun Pelajaran {{ tahunAktif?.nama }}
                         </p>
                     </div>
-                    <button @click="cetak"
-                        class="rounded-full bg-[#F4F7FC] px-4 py-2 text-sm font-medium text-[#1B2333] transition hover:bg-gray-200 print:hidden">
-                        🖨️ Cetak
-                    </button>
+                    <div class="flex gap-2 print:hidden">
+                        <button @click="exportExcel"
+                            class="rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700">
+                            📊 Export Excel
+                        </button>
+                        <button @click="cetak"
+                            class="rounded-full bg-[#F4F7FC] px-4 py-2 text-sm font-medium text-[#1B2333] transition hover:bg-gray-200">
+                            🖨️ Cetak
+                        </button>
+                    </div>
                 </div>
             </div>
 

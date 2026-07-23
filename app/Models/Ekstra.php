@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Ekstra extends Model
 {
+    use LogsActivity;
+
     protected $table = 'ekstra';
     protected $guarded = [];
 
@@ -18,11 +22,25 @@ class Ekstra extends Model
         return $this->hasMany(Kegiatan::class);
     }
 
-    // Many-to-many: satu ekstra bisa banyak pelatih
     public function pelatih()
     {
         return $this->belongsToMany(Pelatih::class, 'ekstra_pelatih')
             ->withPivot('tahun_pelajaran_id')
             ->withTimestamps();
+    }
+
+    public function pembimbing()
+    {
+        return $this->belongsToMany(Pembimbing::class, 'ekstra_pembimbing')
+            ->withPivot('tahun_pelajaran_id')
+            ->withTimestamps();
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }

@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
     siswa: Array,
@@ -11,7 +12,6 @@ const props = defineProps({
     filters: Object,
 });
 
-// Form sinkronisasi
 const syncForm = useForm({ kelas_id: '' });
 
 const doSync = () => {
@@ -20,6 +20,27 @@ const doSync = () => {
         return;
     }
     syncForm.post(route('admin.siswa.sync'), { preserveScroll: true });
+};
+
+// Form Tambah Manual
+const showTambahModal = ref(false);
+const formTambah = useForm({
+    nis: '',
+    nisn: '',
+    nama: '',
+    jk: 'L',
+    kelas_id: '',
+    ekstra_id: '',
+});
+
+const submitTambah = () => {
+    formTambah.post(route('admin.siswa.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showTambahModal.value = false;
+            formTambah.reset();
+        },
+    });
 };
 
 // Filter kelas
@@ -85,14 +106,21 @@ const hapus = (item) => {
 
             <!-- Filter & Tabel -->
             <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
-                <div class="flex flex-wrap items-center gap-3 border-b border-gray-100 p-4">
-                    <label class="text-sm font-medium text-[#1B2333]">Filter Kelas:</label>
-                    <select v-model="filterKelas"
-                        class="rounded-xl border-gray-200 py-2 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25">
-                        <option value="">Semua Kelas</option>
-                        <option v-for="k in daftarKelas" :key="k.id" :value="k.id">{{ k.nama }}</option>
-                    </select>
-                    <span class="ml-auto text-sm text-[#5B6472]">Total: {{ siswa.length }} siswa</span>
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 p-4">
+                    <div class="flex items-center gap-3">
+                        <label class="text-sm font-medium text-[#1B2333]">Filter Kelas:</label>
+                        <select v-model="filterKelas"
+                            class="rounded-xl border-gray-200 py-2 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25">
+                            <option value="">Semua Kelas</option>
+                            <option v-for="k in daftarKelas" :key="k.id" :value="k.id">{{ k.nama }}</option>
+                        </select>
+                        <span class="text-sm text-[#5B6472]">Total: {{ siswa.length }} siswa</span>
+                    </div>
+                    
+                    <button @click="showTambahModal = true"
+                        class="rounded-full bg-[#0B1B36] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#122A52]">
+                        + Tambah Manual
+                    </button>
                 </div>
 
                 <table class="min-w-full divide-y divide-gray-100">
@@ -132,5 +160,77 @@ const hapus = (item) => {
                 </table>
             </div>
         </div>
+
+        <!-- Modal Tambah Manual -->
+        <Modal :show="showTambahModal" @close="showTambahModal = false" maxWidth="md">
+            <div class="p-6">
+                <h2 class="font-['Poppins'] text-lg font-semibold text-[#0B1B36] mb-5">Tambah Siswa Manual</h2>
+                
+                <form @submit.prevent="submitTambah" class="space-y-4">
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-[#1B2333]">NIS</label>
+                        <input type="text" v-model="formTambah.nis" required placeholder="Contoh: 12345"
+                            class="w-full rounded-xl border-gray-200 px-4 py-2.5 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25" />
+                        <span class="text-xs text-red-500" v-if="formTambah.errors.nis">{{ formTambah.errors.nis }}</span>
+                    </div>
+
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-[#1B2333]">NISN (Opsional)</label>
+                        <input type="text" v-model="formTambah.nisn" placeholder="Contoh: 0051234567"
+                            class="w-full rounded-xl border-gray-200 px-4 py-2.5 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25" />
+                        <span class="text-xs text-red-500" v-if="formTambah.errors.nisn">{{ formTambah.errors.nisn }}</span>
+                    </div>
+
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-[#1B2333]">Nama Lengkap</label>
+                        <input type="text" v-model="formTambah.nama" required placeholder="Nama Siswa"
+                            class="w-full rounded-xl border-gray-200 px-4 py-2.5 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25" />
+                        <span class="text-xs text-red-500" v-if="formTambah.errors.nama">{{ formTambah.errors.nama }}</span>
+                    </div>
+
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-[#1B2333]">Jenis Kelamin</label>
+                        <select v-model="formTambah.jk" required
+                            class="w-full rounded-xl border-gray-200 px-4 py-2.5 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25">
+                            <option value="L">Laki-laki (L)</option>
+                            <option value="P">Perempuan (P)</option>
+                        </select>
+                        <span class="text-xs text-red-500" v-if="formTambah.errors.jk">{{ formTambah.errors.jk }}</span>
+                    </div>
+
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-[#1B2333]">Kelas</label>
+                        <select v-model="formTambah.kelas_id" required
+                            class="w-full rounded-xl border-gray-200 px-4 py-2.5 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25">
+                            <option value="" disabled>-- Pilih Kelas --</option>
+                            <option v-for="k in daftarKelas" :key="k.id" :value="k.id">{{ k.nama }}</option>
+                        </select>
+                        <span class="text-xs text-red-500" v-if="formTambah.errors.kelas_id">{{ formTambah.errors.kelas_id }}</span>
+                    </div>
+
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-[#1B2333]">Ekstrakurikuler (Opsional)</label>
+                        <select v-model="formTambah.ekstra_id"
+                            class="w-full rounded-xl border-gray-200 px-4 py-2.5 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25">
+                            <option value="">-- Belum Ikut --</option>
+                            <option v-for="e in daftarEkstra" :key="e.id" :value="e.id">{{ e.nama }}</option>
+                        </select>
+                        <span class="text-xs text-red-500" v-if="formTambah.errors.ekstra_id">{{ formTambah.errors.ekstra_id }}</span>
+                    </div>
+
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button type="button" @click="showTambahModal = false"
+                            class="rounded-full px-5 py-2.5 text-sm font-medium text-[#5B6472] transition hover:bg-gray-100">
+                            Batal
+                        </button>
+                        <button type="submit" :disabled="formTambah.processing"
+                            class="rounded-full bg-[#0B1B36] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#122A52] disabled:opacity-50">
+                            {{ formTambah.processing ? 'Menyimpan...' : 'Simpan Siswa' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </Modal>
+
     </AuthenticatedLayout>
 </template>

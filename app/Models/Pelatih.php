@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Pelatih extends Model
 {
+    use LogsActivity;
+
     protected $table = 'pelatih';
     protected $guarded = [];
 
@@ -19,5 +23,13 @@ class Pelatih extends Model
         return $this->belongsToMany(Ekstra::class, 'ekstra_pelatih')
             ->withPivot('tahun_pelajaran_id')
             ->withTimestamps();
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }

@@ -6,10 +6,14 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    use LogsActivity;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
@@ -51,5 +55,18 @@ class User extends Authenticatable
     public function pelatih()
     {
         return $this->hasOne(\App\Models\Pelatih::class);
+    }
+
+    public function pembimbing()
+    {
+        return $this->hasOne(\App\Models\Pembimbing::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }

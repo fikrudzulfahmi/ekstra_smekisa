@@ -62,24 +62,39 @@ class SiswaController extends Controller
             $jk = null;
             if (!empty($row['jk'])) {
                 $jkUpper = strtoupper($row['jk']);
-                $jk = str_starts_with($jkUpper, 'L') ? 'L' : 'P'; // "Laki-Laki" -> L, "Perempuan" -> P
+                $jk = str_starts_with($jkUpper, 'L') ? 'L' : 'P';
             }
 
-            Siswa::updateOrCreate(
-                [
-                    'nisn'               => $row['nisn'],
-                    'tahun_pelajaran_id' => $tahunAktif->id,
-                ],
-                [
-                    'kelas_id' => $kelas->id,
-                    'nis'      => $row['nis'] ?? null,
-                    'nama'     => $row['nama'],
-                    'jk'       => $jk, // sudah jadi "L" atau "P"
-                ]
-            );
+            // Ambil bagian NIS sebelum tanda "/" (biasanya 5 digit pertama)
+            $nisUtuh = $row['nis'] ?? '';
+            $nisParts = explode('/', $nisUtuh);
+            $nisSingkat = trim($nisParts[0]);
+
+            // Jika NIS kosong setelah diparsing, skip (karena NIS dipakai untuk deteksi)
+            if (empty($nisSingkat)) {
+                continue;
+            }
+
+            activity()->withoutLogs(function () use ($nisSingkat, $tahunAktif, $kelas, $row, $jk) {
+                Siswa::updateOrCreate(
+                    [
+                        'nis'                => $nisSingkat,
+                        'tahun_pelajaran_id' => $tahunAktif->id,
+                    ],
+                    [
+                        'kelas_id' => $kelas->id,
+                        'nisn'     => $row['nisn'] ?? null,
+                        'nama'     => $row['nama'],
+                        'jk'       => $jk,
+                    ]
+                );
+            });
             $jumlah++;
         }
 
+        activity()
+            ->performedOn($kelas)
+            ->log("Sinkronisasi {$jumlah} siswa kelas {$kelas->nama}");
 
         return back()->with('success', "Berhasil sinkronisasi {$jumlah} siswa dari kelas {$kelas->nama}.");
     }
@@ -91,9 +106,48 @@ class SiswaController extends Controller
             'ekstra_id' => 'nullable|exists:ekstra,id',
         ]);
 
-        $siswa->update(['ekstra_id' => $request->ekstra_id]);
+        activity()->withoutLogs(function () use ($siswa, $request) {
+            $siswa->update(['ekstra_id' => $request->ekstra_id]);
+        });
 
         return back()->with('success', 'Ekstra siswa berhasil diperbarui.');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nis'       => 'required|string|max:50',
+            'nisn'      => 'nullable|string|max:50',
+            'nama'      => 'required|string|max:100',
+            'jk'        => 'required|in:L,P',
+            'kelas_id'  => 'required|exists:kelas,id',
+            'ekstra_id' => 'nullable|exists:ekstra,id',
+        ]);
+
+        $tahunAktif = TahunPelajaran::where('is_aktif', true)->first();
+        if (! $tahunAktif) {
+            return back()->with('error', 'Belum ada tahun pelajaran aktif.');
+        }
+
+        $exists = Siswa::where('nis', $request->nis)
+            ->where('tahun_pelajaran_id', $tahunAktif->id)
+            ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'Siswa dengan NIS tersebut sudah ada di tahun ajaran aktif.');
+        }
+
+        Siswa::create([
+            'nis'                => $request->nis,
+            'nisn'               => $request->nisn,
+            'nama'               => $request->nama,
+            'jk'                 => $request->jk,
+            'kelas_id'           => $request->kelas_id,
+            'ekstra_id'          => $request->ekstra_id,
+            'tahun_pelajaran_id' => $tahunAktif->id,
+        ]);
+
+        return back()->with('success', 'Berhasil menambahkan siswa secara manual.');
     }
 
     public function destroy(Siswa $siswa)
