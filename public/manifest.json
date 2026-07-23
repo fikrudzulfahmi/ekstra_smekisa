@@ -1,0 +1,21 @@
+{
+    "name": "SMEKISA Ekstrakurikuler",
+    "short_name": "SMEKISA",
+    "description": "Sistem Presensi Ekstrakurikuler SMKS Islam 1 Kota Blitar",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#FAFAFA",
+    "theme_color": "#0B1B36",
+    "icons": [
+        {
+            "src": "/images/landing/fav-logo-sekolah.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/landing/fav-logo-sekolah.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

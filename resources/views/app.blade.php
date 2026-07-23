@@ -8,6 +8,9 @@
         <title inertia>{{ config('app.name', 'SMEKISA') }}</title>
 
         <link rel="icon" href="{{ asset('images/landing/fav-logo-sekolah.png') }}" />
+        <link rel="manifest" href="{{ asset('manifest.json') }}" />
+        <meta name="theme-color" content="#0B1B36" />
+        <link rel="apple-touch-icon" href="{{ asset('images/landing/fav-logo-sekolah.png') }}" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,5 +24,17 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
+        
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                        console.log('ServiceWorker registered with scope: ', registration.scope);
+                    }, function(err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+                });
+            }
+        </script>
     </body>
 </html>
