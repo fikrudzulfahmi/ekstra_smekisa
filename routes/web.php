@@ -19,6 +19,12 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
+        'stats' => [
+            'ekstra' => \App\Models\Ekstra::count(),
+            'siswa' => \App\Models\Siswa::count(),
+            'pelatih' => \App\Models\User::where('role', 'pelatih')->count(),
+            'kegiatan' => \App\Models\Kegiatan::count(),
+        ]
     ]);
 });
 
