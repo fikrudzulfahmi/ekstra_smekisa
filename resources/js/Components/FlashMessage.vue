@@ -28,22 +28,24 @@ watch(flash, (val) => {
 </script>
 
 <template>
-    <Transition
-        enter-active-class="transition ease-out duration-300"
-        enter-from-class="opacity-0 translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition ease-in duration-200"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0">
-        <div v-if="show" class="fixed top-5 right-5 z-50 max-w-sm">
-            <div :class="[
-                'rounded-xl shadow-lg px-4 py-3 text-sm font-medium flex items-center gap-2',
-                tipe === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
-            ]">
-                <span>{{ tipe === 'success' ? '✅' : '⚠️' }}</span>
-                <span>{{ pesan }}</span>
-                <button @click="show = false" class="ml-2 opacity-70 hover:opacity-100">✕</button>
+    <div>
+        <Transition
+            enter-active-class="transition ease-out duration-300"
+            enter-from-class="opacity-0 translate-y-2"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition ease-in duration-200"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0">
+            <div v-if="show" class="fixed top-5 right-5 z-50 max-w-sm">
+                <div :class="[
+                    'rounded-xl shadow-lg px-4 py-3 text-sm font-medium flex items-center gap-2',
+                    tipe === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
+                ]">
+                    <span>{{ tipe === 'success' ? '✅' : '⚠️' }}</span>
+                    <span>{{ pesan }}</span>
+                    <button @click="show = false" class="ml-2 opacity-70 hover:opacity-100">✕</button>
+                </div>
             </div>
-        </div>
-    </Transition>
+        </Transition>
+    </div>
 </template>
