@@ -23,9 +23,12 @@ const sidebarOpen = ref(false);
 </script>
 
 <template>
-    <div class="flex min-h-screen bg-[#F4F7FC] font-['Inter']">
+    <div class="flex min-h-screen bg-[#FAFAFA] font-['Inter'] relative selection:bg-[#F2A93B] selection:text-[#0B1B36]">
+        <!-- Latar Belakang Pola Grid -->
+        <div class="absolute inset-0 z-0 bg-grid opacity-30 pointer-events-none"></div>
+
         <!-- Sidebar -->
-        <Sidebar :open="sidebarOpen" @close="sidebarOpen = false" />
+        <Sidebar :open="sidebarOpen" @close="sidebarOpen = false" class="z-30 relative" />
 
         <!-- Konten Utama -->
         <div class="flex min-w-0 flex-1 flex-col">
@@ -86,3 +89,13 @@ const sidebarOpen = ref(false);
         <FlashMessage />
     </div>
 </template>
+<style scoped>
+.bg-grid {
+    background-size: 40px 40px;
+    background-image: 
+        linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+    mask-image: linear-gradient(to bottom, white 30%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, white 30%, transparent 100%);
+}
+</style>

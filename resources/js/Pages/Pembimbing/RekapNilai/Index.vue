@@ -49,7 +49,7 @@ const warnaRata = (rata) => {
             </div>
         </template>
 
-        <div>
+        <div class="space-y-6">
             <div class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5 flex flex-wrap items-center gap-3">
                 <label class="text-sm font-medium text-[#1B2333]">Ekstrakurikuler:</label>
                 <select v-model="filterEkstra"

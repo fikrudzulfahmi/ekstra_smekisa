@@ -79,7 +79,7 @@ const submit = () => {
     <AuthenticatedLayout>
         <template #header>Buat Penilaian</template>
 
-        <div>
+        <div class="space-y-6">
             <form @submit.prevent="submit" class="space-y-6">
                 <!-- Detail Penilaian -->
                 <div class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">

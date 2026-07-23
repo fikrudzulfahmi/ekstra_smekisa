@@ -52,7 +52,7 @@ const warnaStatus = (status) => ({
     <AuthenticatedLayout>
         <template #header>Edit Kegiatan — {{ kegiatan.ekstra.nama }}</template>
 
-        <div>
+        <div class="space-y-6">
             <!-- Rekap Kehadiran -->
             <div class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5">
                 <h3 class="mb-3 text-sm font-medium text-[#5B6472]">Rekap Kehadiran Kegiatan Ini</h3>

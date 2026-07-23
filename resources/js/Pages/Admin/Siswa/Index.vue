@@ -73,7 +73,7 @@ const hapus = (item) => {
     <AuthenticatedLayout>
         <template #header>Data Siswa</template>
 
-        <div>
+        <div class="space-y-6">
             <!-- Info Tahun Aktif -->
             <div v-if="!tahunAktif" class="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
                 Belum ada tahun pelajaran aktif. Set dulu di menu Tahun Pelajaran.
@@ -123,7 +123,7 @@ const hapus = (item) => {
                     </button>
                 </div>
 
-                <table class="min-w-full divide-y divide-gray-100">
+                <div class="overflow-x-auto">`n<table class="min-w-full divide-y divide-gray-100">
                     <thead class="bg-[#F4F7FC]">
                         <tr>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#5B6472]">NIS</th>
@@ -157,7 +157,7 @@ const hapus = (item) => {
                             </td>
                         </tr>
                     </tbody>
-                </table>
+                </table>`n</div>
             </div>
         </div>
 

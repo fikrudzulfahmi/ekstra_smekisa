@@ -64,7 +64,7 @@ const formatTgl = (t) =>
             </div>
         </template>
 
-        <div>
+        <div class="space-y-6">
             <!-- Panel Filter -->
             <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5 print:hidden">
                 <div class="grid grid-cols-1 items-end gap-4 md:grid-cols-4">

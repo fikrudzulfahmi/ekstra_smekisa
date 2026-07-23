@@ -9,7 +9,7 @@ import { Head } from '@inertiajs/vue3';
     <AuthenticatedLayout>
         <template #header>Dashboard</template>
 
-        <div>
+        <div class="space-y-6">
             <div class="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-black/5">
                 <p class="text-[#1B2333]">Anda berhasil masuk.</p>
             </div>

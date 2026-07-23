@@ -96,7 +96,7 @@ const stats = computed(() => [
     <AuthenticatedLayout>
         <template #header>Dashboard Admin</template>
 
-        <div>
+        <div class="space-y-6">
             <!-- Sambutan -->
             <div class="mb-8">
                 <h1 class="font-['Poppins'] text-xl font-semibold text-[#0B1B36]">

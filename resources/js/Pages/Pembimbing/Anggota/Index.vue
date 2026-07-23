@@ -41,7 +41,7 @@ const ubahEkstra = (item, event) => {
     <AuthenticatedLayout>
         <template #header>Anggota Ekstrakurikuler</template>
 
-        <div>
+        <div class="space-y-6">
             <div v-if="!tahunAktif" class="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
                 Belum ada tahun pelajaran aktif.
             </div>
@@ -69,7 +69,7 @@ const ubahEkstra = (item, event) => {
                     <span class="ml-auto text-sm text-[#5B6472]">Total: {{ siswa.length }} siswa</span>
                 </div>
 
-                <table class="min-w-full divide-y divide-gray-100">
+                <div class="overflow-x-auto">`n<table class="min-w-full divide-y divide-gray-100">
                     <thead class="bg-[#F4F7FC]">
                         <tr>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#5B6472]">NIS</th>
@@ -102,7 +102,7 @@ const ubahEkstra = (item, event) => {
                             </td>
                         </tr>
                     </tbody>
-                </table>
+                </table>`n</div>
             </div>
         </div>
     </AuthenticatedLayout>
