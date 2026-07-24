@@ -12,9 +12,9 @@ const userName = computed(() => page.props.auth?.user?.name);
 </script>
 
 <template>
-    <Head title="Dashboard Pembimbing" />
+    <Head title="Dashboard Pembina" />
     <AuthenticatedLayout>
-        <template #header>Dashboard Pembimbing</template>
+        <template #header>Dashboard Pembina</template>
 
         <div class="space-y-6">
             <div class="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-black/5">

@@ -24,7 +24,7 @@ const menuAdmin = [
     { label: 'Kelas', route: 'admin.kelas.index', icon: 'building', match: ['admin.kelas.*'] },
     { label: 'Ekstrakurikuler', route: 'admin.ekstra.index', icon: 'flag', match: ['admin.ekstra.*'] },
     { label: 'Pelatih', route: 'admin.pelatih.index', icon: 'user', match: ['admin.pelatih.*'] },
-    { label: 'Pembimbing', route: 'admin.pembimbing.index', icon: 'users', match: ['admin.pembimbing.*'] },
+    { label: 'Pembina', route: 'admin.pembimbing.index', icon: 'users', match: ['admin.pembimbing.*'] },
     { label: 'Siswa', route: 'admin.siswa.index', icon: 'users', match: ['admin.siswa.*'] },
     { label: 'Lap. Presensi (Kegiatan)', route: 'admin.laporan.index', icon: 'chart', match: ['admin.laporan.index'] },
     { label: 'Lap. Presensi (Kelas)', route: 'admin.laporan.per-kelas', icon: 'chart-pie', match: ['admin.laporan.per-kelas'] },
@@ -62,7 +62,7 @@ const menu = computed(() => {
 });
 
 const roleLabel = computed(() =>
-    role.value === 'admin' ? 'Admin' : role.value === 'pelatih' ? 'Pelatih' : role.value === 'pembimbing' ? 'Pembimbing' : role.value,
+    role.value === 'admin' ? 'Admin' : role.value === 'pelatih' ? 'Pelatih' : role.value === 'pembimbing' ? 'Pembina' : role.value,
 );
 
 const isActive = (item) => item.match.some((pattern) => route().current(pattern));

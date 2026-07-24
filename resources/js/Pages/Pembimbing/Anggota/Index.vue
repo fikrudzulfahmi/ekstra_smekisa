@@ -63,7 +63,7 @@ const ubahEkstra = (item, event) => {
                             <option value="">Semua Siswa</option>
                             <option value="anggota_saya">Hanya Anggota Saya</option>
                             <option value="belum_ikut">Belum Ikut Ekstra</option>
-                            <option value="ekstra_lain">Ekstra Pembimbing Lain</option>
+                            <option value="ekstra_lain">Ekstra Pembina Lain</option>
                         </select>
                     </div>
                     <span class="ml-auto text-sm text-[#5B6472]">Total: {{ siswa.length }} siswa</span>

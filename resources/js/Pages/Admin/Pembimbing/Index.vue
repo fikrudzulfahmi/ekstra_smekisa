@@ -45,23 +45,23 @@ const resetForm = () => {
 };
 
 const hapus = (item) => {
-    if (confirm(`Hapus pembimbing ${item.nama}? Akun login-nya juga akan dihapus.`)) {
+    if (confirm(`Hapus pembina ${item.nama}? Akun login-nya juga akan dihapus.`)) {
         router.delete(route('admin.pembimbing.destroy', item.id));
     }
 };
 </script>
 
 <template>
-    <Head title="Data Pembimbing" />
+    <Head title="Data Pembina" />
 
     <AuthenticatedLayout>
-        <template #header>Data Pembimbing</template>
+        <template #header>Data Pembina</template>
 
         <div class="space-y-6">
             <!-- Form -->
             <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
                 <h3 class="font-['Poppins'] text-lg font-semibold text-[#0B1B36]">
-                    {{ isEditing ? 'Edit' : 'Tambah' }} Pembimbing
+                    {{ isEditing ? 'Edit' : 'Tambah' }} Pembina
                 </h3>
                 <form @submit.prevent="submit" class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
@@ -149,7 +149,7 @@ const hapus = (item) => {
                             </td>
                         </tr>
                         <tr v-if="pembimbing.length === 0">
-                            <td colspan="4" class="px-6 py-10 text-center text-sm text-[#5B6472]">Belum ada data pembimbing.</td>
+                            <td colspan="4" class="px-6 py-10 text-center text-sm text-[#5B6472]">Belum ada data pembina.</td>
                         </tr>
                     </tbody>
                 </table></div>
