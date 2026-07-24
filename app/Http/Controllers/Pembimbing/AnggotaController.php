@@ -45,12 +45,21 @@ class AnggotaController extends Controller
             }
         }
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%")
+                  ->orWhere('nisn', 'like', "%{$search}%");
+            });
+        }
+
         return inertia('Pembimbing/Anggota/Index', [
             'siswa' => $query->orderBy('nama')->get(),
             'daftarKelas' => Kelas::orderBy('nama')->get(),
             'daftarEkstra' => $daftarEkstra, // Ekstra yang dibimbing
             'tahunAktif' => $tahunAktif,
-            'filters' => $request->only(['kelas_id', 'status']),
+            'filters' => $request->only(['kelas_id', 'status', 'search']),
             'pembimbingEkstraIds' => $ekstraIds,
         ]);
     }

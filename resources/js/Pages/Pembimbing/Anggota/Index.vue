@@ -14,13 +14,27 @@ const props = defineProps({
 
 const filterKelas = ref(props.filters?.kelas_id ?? '');
 const filterStatus = ref(props.filters?.status ?? '');
+const search = ref(props.filters?.search ?? '');
+
+let searchTimeout = null;
 
 watch([filterKelas, filterStatus], ([kelasVal, statusVal]) => {
-    router.get(route('pembimbing.anggota.index'), { kelas_id: kelasVal, status: statusVal }, {
+    router.get(route('pembimbing.anggota.index'), { kelas_id: kelasVal, status: statusVal, search: search.value }, {
         preserveState: true,
         preserveScroll: true,
         replace: true,
     });
+});
+
+watch(search, (val) => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        router.get(route('pembimbing.anggota.index'), { kelas_id: filterKelas.value, status: filterStatus.value, search: val }, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    }, 300);
 });
 
 const isBisaDiedit = (item) => {
@@ -65,6 +79,10 @@ const ubahEkstra = (item, event) => {
                             <option value="belum_ikut">Belum Ikut Ekstra</option>
                             <option value="ekstra_lain">Ekstra Pembina Lain</option>
                         </select>
+                    </div>
+                    <div class="flex items-center gap-2 ml-4">
+                        <input type="text" v-model="search" placeholder="Cari nama atau NIS..."
+                            class="w-48 sm:w-64 rounded-xl border-gray-200 py-2 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25" />
                     </div>
                     <span class="ml-auto text-sm text-[#5B6472]">Total: {{ siswa.length }} siswa</span>
                 </div>
