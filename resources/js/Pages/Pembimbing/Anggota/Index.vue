@@ -13,13 +13,14 @@ const props = defineProps({
 });
 
 const filterKelas = ref(props.filters?.kelas_id ?? '');
+const filterEkstra = ref(props.filters?.ekstra_id ?? '');
 const filterStatus = ref(props.filters?.status ?? '');
 const search = ref(props.filters?.search ?? '');
 
 let searchTimeout = null;
 
-watch([filterKelas, filterStatus], ([kelasVal, statusVal]) => {
-    router.get(route('pembimbing.anggota.index'), { kelas_id: kelasVal, status: statusVal, search: search.value }, {
+watch([filterKelas, filterEkstra, filterStatus], ([kelasVal, ekstraVal, statusVal]) => {
+    router.get(route('pembimbing.anggota.index'), { kelas_id: kelasVal, ekstra_id: ekstraVal, status: statusVal, search: search.value }, {
         preserveState: true,
         preserveScroll: true,
         replace: true,
@@ -29,7 +30,7 @@ watch([filterKelas, filterStatus], ([kelasVal, statusVal]) => {
 watch(search, (val) => {
     if (searchTimeout) clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
-        router.get(route('pembimbing.anggota.index'), { kelas_id: filterKelas.value, status: filterStatus.value, search: val }, {
+        router.get(route('pembimbing.anggota.index'), { kelas_id: filterKelas.value, ekstra_id: filterEkstra.value, status: filterStatus.value, search: val }, {
             preserveState: true,
             preserveScroll: true,
             replace: true,
@@ -68,6 +69,14 @@ const ubahEkstra = (item, event) => {
                             class="rounded-xl border-gray-200 py-2 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25">
                             <option value="">Semua Kelas</option>
                             <option v-for="k in daftarKelas" :key="k.id" :value="k.id">{{ k.nama }}</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2 ml-4">
+                        <label class="text-sm font-medium text-[#1B2333]">Ekstra:</label>
+                        <select v-model="filterEkstra"
+                            class="rounded-xl border-gray-200 py-2 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25">
+                            <option value="">Semua Ekstra Saya</option>
+                            <option v-for="e in daftarEkstra" :key="e.id" :value="e.id">{{ e.nama }}</option>
                         </select>
                     </div>
                     <div class="flex items-center gap-2 ml-4">

@@ -35,6 +35,10 @@ class AnggotaController extends Controller
             $query->where('kelas_id', $request->kelas_id);
         }
 
+        if ($request->filled('ekstra_id')) {
+            $query->where('ekstra_id', $request->ekstra_id);
+        }
+
         if ($request->filled('status')) {
             if ($request->status === 'anggota_saya') {
                 $query->whereIn('ekstra_id', $ekstraIds);
@@ -59,7 +63,7 @@ class AnggotaController extends Controller
             'daftarKelas' => Kelas::orderBy('nama')->get(),
             'daftarEkstra' => $daftarEkstra, // Ekstra yang dibimbing
             'tahunAktif' => $tahunAktif,
-            'filters' => $request->only(['kelas_id', 'status', 'search']),
+            'filters' => $request->only(['kelas_id', 'ekstra_id', 'status', 'search']),
             'pembimbingEkstraIds' => $ekstraIds,
         ]);
     }
