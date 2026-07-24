@@ -43,14 +43,29 @@ const submitTambah = () => {
     });
 };
 
-// Filter kelas
+// Filter kelas & search
 const filterKelas = ref(props.filters?.kelas_id ?? '');
+const search = ref(props.filters?.search ?? '');
+
+let searchTimeout = null;
+
 watch(filterKelas, (val) => {
-    router.get(route('admin.siswa.index'), { kelas_id: val }, {
+    router.get(route('admin.siswa.index'), { kelas_id: val, search: search.value }, {
         preserveState: true,
         preserveScroll: true,
         replace: true,
     });
+});
+
+watch(search, (val) => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        router.get(route('admin.siswa.index'), { kelas_id: filterKelas.value, search: val }, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    }, 300);
 });
 
 // Ubah ekstra siswa langsung dari dropdown di tabel
@@ -107,13 +122,19 @@ const hapus = (item) => {
             <!-- Filter & Tabel -->
             <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
                 <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 p-4">
-                    <div class="flex items-center gap-3">
-                        <label class="text-sm font-medium text-[#1B2333]">Filter Kelas:</label>
-                        <select v-model="filterKelas"
-                            class="rounded-xl border-gray-200 py-2 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25">
-                            <option value="">Semua Kelas</option>
-                            <option v-for="k in daftarKelas" :key="k.id" :value="k.id">{{ k.nama }}</option>
-                        </select>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <label class="text-sm font-medium text-[#1B2333]">Kelas:</label>
+                            <select v-model="filterKelas"
+                                class="rounded-xl border-gray-200 py-2 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25">
+                                <option value="">Semua Kelas</option>
+                                <option v-for="k in daftarKelas" :key="k.id" :value="k.id">{{ k.nama }}</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" v-model="search" placeholder="Cari nama atau NIS..."
+                                class="rounded-xl border-gray-200 py-2 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25 w-64" />
+                        </div>
                         <span class="text-sm text-[#5B6472]">Total: {{ siswa.length }} siswa</span>
                     </div>
                     

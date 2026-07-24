@@ -24,12 +24,21 @@ class SiswaController extends Controller
             $query->where('kelas_id', $request->kelas_id);
         }
 
+        // Pencarian (opsional)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%");
+            });
+        }
+
         return inertia('Admin/Siswa/Index', [
             'siswa'        => $query->orderBy('nama')->get(),
             'daftarKelas'  => Kelas::orderBy('nama')->get(),
             'daftarEkstra' => Ekstra::orderBy('nama')->get(),
             'tahunAktif'   => $tahunAktif,
-            'filters'      => $request->only('kelas_id'),
+            'filters'      => $request->only('kelas_id', 'search'),
         ]);
     }
 
