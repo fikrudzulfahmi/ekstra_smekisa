@@ -30,33 +30,35 @@ const hapus = (item) => {
 
         <div class="space-y-6">
             <div v-for="item in kegiatan" :key="item.id"
-                class="flex items-center justify-between gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5 transition hover:shadow-md">
+                class="flex flex-col sm:flex-row sm:items-center gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5 transition hover:shadow-md">
                 <div class="min-w-0 flex-1">
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
                         <span class="rounded-full bg-[#3E6FD9]/10 px-2.5 py-0.5 text-xs font-medium text-[#3E6FD9]">{{ item.ekstra.nama }}</span>
-                        <span class="text-sm text-[#5B6472]">{{ formatTanggal(item.tanggal) }}</span>
+                        <span class="text-sm text-[#5B6472] whitespace-nowrap">{{ formatTanggal(item.tanggal) }}</span>
                     </div>
-                    <h3 class="mt-1 font-['Poppins'] font-semibold text-[#0B1B36]">{{ item.materi }}</h3>
-                    <p v-if="item.deskripsi" class="mt-0.5 text-sm text-[#5B6472]">{{ item.deskripsi }}</p>
+                    <h3 class="mt-2 font-['Poppins'] font-semibold text-[#0B1B36]">{{ item.materi }}</h3>
+                    <p v-if="item.deskripsi" class="mt-0.5 text-sm text-[#5B6472] line-clamp-2">{{ item.deskripsi }}</p>
 
-                    <div class="mt-2 flex flex-wrap gap-3 text-xs">
-                        <span class="text-emerald-600">Hadir: {{ item.hadir_count }}</span>
-                        <span class="text-yellow-600">Izin: {{ item.izin_count }}</span>
-                        <span class="text-orange-600">Sakit: {{ item.sakit_count }}</span>
-                        <span class="text-red-600">Alpha: {{ item.alpha_count }}</span>
-                        <span class="text-[#5B6472]">Total: {{ item.total_count }}</span>
+                    <div class="mt-3 flex flex-wrap gap-2 text-xs">
+                        <span class="rounded-md bg-emerald-50 px-2 py-1 font-medium text-emerald-600">Hadir: {{ item.hadir_count }}</span>
+                        <span class="rounded-md bg-yellow-50 px-2 py-1 font-medium text-yellow-600">Izin: {{ item.izin_count }}</span>
+                        <span class="rounded-md bg-orange-50 px-2 py-1 font-medium text-orange-600">Sakit: {{ item.sakit_count }}</span>
+                        <span class="rounded-md bg-red-50 px-2 py-1 font-medium text-red-600">Alpha: {{ item.alpha_count }}</span>
+                        <span class="rounded-md bg-gray-50 px-2 py-1 font-medium text-[#5B6472]">Total: {{ item.total_count }}</span>
                     </div>
                 </div>
 
-                <div v-if="item.foto" class="shrink-0">
-                    <img :src="`/storage/${item.foto}`" alt="Foto Kegiatan"
-                        class="h-20 w-20 rounded-xl border border-gray-100 object-cover" />
-                </div>
+                <div class="flex items-center gap-4 sm:flex-row">
+                    <div v-if="item.foto" class="shrink-0">
+                        <img :src="`/storage/${item.foto}`" alt="Foto Kegiatan"
+                            class="h-20 w-20 rounded-xl border border-gray-100 object-cover" />
+                    </div>
 
-                <div class="flex shrink-0 gap-2">
-                    <Link :href="route('pelatih.kegiatan.edit', item.id)"
-                        class="rounded-lg px-2.5 py-1.5 text-sm font-medium text-[#3E6FD9] transition hover:bg-[#3E6FD9]/10">Edit</Link>
-                    <button @click="hapus(item)" class="rounded-lg px-2.5 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-50">Hapus</button>
+                    <div class="flex flex-1 justify-end sm:flex-col sm:flex-none shrink-0 gap-2">
+                        <Link :href="route('pelatih.kegiatan.edit', item.id)"
+                            class="rounded-lg bg-blue-50 px-3 py-1.5 text-center text-sm font-medium text-[#3E6FD9] transition hover:bg-blue-100">Edit</Link>
+                        <button @click="hapus(item)" class="rounded-lg bg-red-50 px-3 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-100">Hapus</button>
+                    </div>
                 </div>
             </div>
 
