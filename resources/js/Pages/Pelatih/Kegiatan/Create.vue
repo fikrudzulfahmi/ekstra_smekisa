@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, reactive, computed, watch, useTemplateRef } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import imageCompression from 'browser-image-compression';
@@ -30,6 +30,8 @@ watch(() => form.foto, (newVal, oldVal) => {
 });
 
 const isCompressing = ref(false);
+const inputKamera = useTemplateRef('inputKamera');
+const inputFile = useTemplateRef('inputFile');
 
 const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -156,21 +158,41 @@ const warnaStatus = (status) => ({
 
                     <div>
                         <label class="mb-2 block text-sm font-medium text-[#1B2333]">Foto Kegiatan (opsional)</label>
-                        <div class="rounded-xl border border-gray-200 p-3 bg-gray-50/50">
-                            <label class="mb-2 block text-xs font-medium text-gray-500">Upload File / Ambil Gambar</label>
-                            <input type="file" accept="image/jpeg, image/png, image/webp"
-                                @change="handleImageUpload"
-                                class="block w-full text-sm text-[#5B6472] file:mr-4 file:rounded-full file:border-0 file:bg-[#3E6FD9]/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-[#3E6FD9] hover:file:bg-[#3E6FD9]/20" />
+
+                        <!-- Hidden inputs -->
+                        <input ref="inputKamera" type="file" accept="image/jpeg, image/png, image/webp" capture="environment"
+                            @change="handleImageUpload" class="hidden" />
+                        <input ref="inputFile" type="file" accept="image/jpeg, image/png, image/webp"
+                            @change="handleImageUpload" class="hidden" />
+
+                        <!-- Tombol pilihan -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" @click="inputKamera.click()"
+                                class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#3E6FD9]/40 bg-[#3E6FD9]/5 px-4 py-4 text-center transition hover:border-[#3E6FD9] hover:bg-[#3E6FD9]/10 active:scale-95">
+                                <svg class="h-7 w-7 text-[#3E6FD9]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span class="text-xs font-semibold text-[#3E6FD9]">Buka Kamera</span>
+                            </button>
+
+                            <button type="button" @click="inputFile.click()"
+                                class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-4 text-center transition hover:border-gray-400 hover:bg-gray-100 active:scale-95">
+                                <svg class="h-7 w-7 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span class="text-xs font-semibold text-gray-600">Pilih dari Galeri</span>
+                            </button>
                         </div>
-                        <p class="mt-2 text-xs text-[#5B6472]">
-                            Ukuran foto akan dikompres otomatis.
-                        </p>
+
+                        <p class="mt-2 text-xs text-[#5B6472]">Ukuran foto akan dikompres otomatis.</p>
                         <div v-if="isCompressing" class="mt-2 text-sm text-[#F2A93B] font-medium animate-pulse">
                             Sedang memproses dan mengompres foto...
                         </div>
                         <div v-if="form.errors.foto" class="mt-1 text-sm text-red-600">{{ form.errors.foto }}</div>
 
-                        <div v-if="form.foto" class="mt-2">
+                        <div v-if="form.foto" class="mt-3">
+                            <p class="mb-1 text-xs text-[#5B6472]">Preview:</p>
                             <img :src="previewUrl" alt="Preview" class="h-32 rounded-xl border border-gray-200 object-cover" />
                         </div>
                     </div>
