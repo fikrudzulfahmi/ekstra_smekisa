@@ -10,6 +10,7 @@ const props = defineProps({
 
 const filterStart = ref(props.filters.start_date);
 const filterEnd = ref(props.filters.end_date);
+const tanggalCetak = ref(new Date().toISOString().split('T')[0]);
 
 watch([filterStart, filterEnd], ([startVal, endVal]) => {
     router.get(route('admin.laporan-hr.index'), { start_date: startVal, end_date: endVal }, {
@@ -23,6 +24,7 @@ const cetakLaporan = () => {
     const url = route('admin.laporan-hr.cetak', {
         start_date: filterStart.value,
         end_date: filterEnd.value,
+        tanggal_cetak: tanggalCetak.value,
     });
     window.open(url, '_blank');
 };
@@ -46,6 +48,11 @@ const cetakLaporan = () => {
                         <div>
                             <label class="mb-1 block text-sm font-medium text-[#1B2333]">Tanggal Akhir</label>
                             <input v-model="filterEnd" type="date"
+                                class="w-full rounded-xl border-gray-200 py-2 px-3 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25" />
+                        </div>
+                        <div class="ml-4">
+                            <label class="mb-1 block text-sm font-medium text-[#1B2333]">Tanggal Cetak</label>
+                            <input v-model="tanggalCetak" type="date"
                                 class="w-full rounded-xl border-gray-200 py-2 px-3 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25" />
                         </div>
                     </div>

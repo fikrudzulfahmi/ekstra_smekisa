@@ -6,6 +6,7 @@ const props = defineProps({
     data: Array,
     periode: String,
     tahunPelajaran: String,
+    tanggalCetak: String,
     settings: Object,
 });
 
@@ -46,18 +47,18 @@ onMounted(() => {
             </thead>
             <tbody>
                 <tr v-for="(item, index) in data" :key="index">
-                    <td class="border border-black px-2 py-3 text-center">{{ index + 1 }}</td>
-                    <td class="border border-black px-4 py-3">{{ item.nama_pelatih }}</td>
-                    <td class="border border-black px-4 py-3">{{ item.nama_ekstra }}</td>
-                    <td class="border border-black px-2 py-3 text-center">{{ item.jumlah_kegiatan }}</td>
-                    <td class="border border-black px-4 py-3 text-right">{{ new Intl.NumberFormat('id-ID').format(item.nominal_hr) }}</td>
-                    <td class="border border-black px-4 py-3 text-right">{{ new Intl.NumberFormat('id-ID').format(item.total) }}</td>
-                    <td class="border border-black px-2 py-3 text-left align-top relative">
+                    <td class="border border-black px-2 py-1.5 text-center text-sm">{{ index + 1 }}</td>
+                    <td class="border border-black px-4 py-1.5 text-sm">{{ item.nama_pelatih }}</td>
+                    <td class="border border-black px-4 py-1.5 text-sm">{{ item.nama_ekstra }}</td>
+                    <td class="border border-black px-2 py-1.5 text-center text-sm">{{ item.jumlah_kegiatan }}</td>
+                    <td class="border border-black px-4 py-1.5 text-right text-sm">{{ new Intl.NumberFormat('id-ID').format(item.nominal_hr) }}</td>
+                    <td class="border border-black px-4 py-1.5 text-right text-sm">{{ new Intl.NumberFormat('id-ID').format(item.total) }}</td>
+                    <td class="border border-black px-2 py-1.5 text-left align-top relative">
                         <span class="text-xs absolute top-1 left-2">{{ index + 1 }}.</span>
                     </td>
                 </tr>
                 <tr v-if="data.length === 0">
-                    <td colspan="7" class="border border-black px-4 py-8 text-center italic">Tidak ada data pelatih</td>
+                    <td colspan="7" class="border border-black px-4 py-4 text-center italic text-sm">Tidak ada data pelatih</td>
                 </tr>
             </tbody>
         </table>
@@ -65,7 +66,7 @@ onMounted(() => {
         <!-- Tanda Tangan -->
         <div class="flex justify-end pr-10">
             <div class="text-center w-64">
-                <p class="mb-1">Blitar, ............................................</p>
+                <p class="mb-1">Blitar, {{ tanggalCetak }}</p>
                 <p class="mb-20">{{ settings.hr_signer_title }}</p>
                 
                 <p class="font-bold underline">{{ settings.hr_signer_name }}</p>

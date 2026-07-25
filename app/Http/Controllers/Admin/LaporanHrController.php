@@ -48,6 +48,9 @@ class LaporanHrController extends Controller
         $start = $request->query('start_date', Carbon::now()->startOfMonth()->format('Y-m-d'));
         $end = $request->query('end_date', Carbon::now()->endOfMonth()->format('Y-m-d'));
         
+        $tanggalCetak = $request->query('tanggal_cetak', Carbon::now()->format('Y-m-d'));
+        $tanggalCetakIndo = Carbon::parse($tanggalCetak)->translatedFormat('d F Y');
+        
         $tahunAktif = TahunPelajaran::where('is_aktif', true)->first();
         
         $query = Kegiatan::with(['pelatih.user', 'ekstra'])
@@ -73,6 +76,7 @@ class LaporanHrController extends Controller
             'data' => $data,
             'periode' => Carbon::parse($start)->translatedFormat('d F Y') . ' - ' . Carbon::parse($end)->translatedFormat('d F Y'),
             'tahunPelajaran' => $tahunAktif ? $tahunAktif->nama : '-',
+            'tanggalCetak' => $tanggalCetakIndo,
             'settings' => [
                 'hr_signer_name' => $settings['hr_signer_name'] ?? 'Sugianto, S.Pd.I',
                 'hr_signer_title' => $settings['hr_signer_title'] ?? 'Waka Kesiswaan',
