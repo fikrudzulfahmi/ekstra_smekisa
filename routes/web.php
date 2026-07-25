@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\TahunPelajaranController;
 use App\Http\Controllers\Admin\PelatihController;
 use App\Http\Controllers\Admin\SiswaController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\LaporanHrController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Pelatih\KegiatanController;
 use App\Http\Controllers\Pelatih\PenilaianController;
 
@@ -103,6 +105,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('laporan/nilai/per-kelas', [LaporanController::class, 'nilaiPerKelas'])->name('laporan.nilai.per-kelas');
     Route::get('laporan/nilai/per-kelas/export', [LaporanController::class, 'exportNilaiPerKelas'])->name('laporan.nilai.per-kelas.export');
     Route::get('laporan/nilai/{penilaian}', [LaporanController::class, 'nilaiShow'])->name('laporan.nilai.show');
+
+    // laporan hr pelatih
+    Route::get('laporan-hr', [LaporanHrController::class, 'index'])->name('laporan-hr.index');
+    Route::get('laporan-hr/cetak', [LaporanHrController::class, 'print'])->name('laporan-hr.cetak');
+
+    // settings
+    Route::get('setting', [SettingController::class, 'index'])->name('setting.index');
+    Route::post('setting', [SettingController::class, 'update'])->name('setting.update');
 });
 
 // Grup route khusus Pelatih

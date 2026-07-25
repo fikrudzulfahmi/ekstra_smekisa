@@ -20,7 +20,12 @@ class EkstraController extends Controller
         $validated = $request->validate([
             'nama'      => 'required|string|max:255|unique:ekstra,nama',
             'deskripsi' => 'nullable|string',
+            'nominal_hr'=> 'nullable|numeric|min:0',
         ]);
+
+        if (empty($validated['nominal_hr'])) {
+            $validated['nominal_hr'] = 0;
+        }
 
         Ekstra::create($validated);
 
@@ -32,7 +37,12 @@ class EkstraController extends Controller
         $validated = $request->validate([
             'nama'      => 'required|string|max:255|unique:ekstra,nama,' . $ekstra->id,
             'deskripsi' => 'nullable|string',
+            'nominal_hr'=> 'nullable|numeric|min:0',
         ]);
+
+        if (empty($validated['nominal_hr'])) {
+            $validated['nominal_hr'] = 0;
+        }
 
         $ekstra->update($validated);
 

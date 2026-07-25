@@ -8,7 +8,7 @@ defineProps({
     ekstra: Array,
 });
 
-const form = useForm({ id: null, nama: '', deskripsi: '' });
+const form = useForm({ id: null, nama: '', deskripsi: '', nominal_hr: 0 });
 const isEditing = ref(false);
 
 const submit = () => {
@@ -24,6 +24,7 @@ const editItem = (item) => {
     form.id = item.id;
     form.nama = item.nama;
     form.deskripsi = item.deskripsi ?? '';
+    form.nominal_hr = item.nominal_hr ?? 0;
 };
 
 const resetForm = () => {
@@ -63,6 +64,16 @@ const hapus = (item) => {
                         <div v-if="form.errors.nama" class="mt-1 text-sm text-red-600">{{ form.errors.nama }}</div>
                     </div>
                     <div>
+                        <label class="mb-1 block text-sm font-medium text-[#1B2333]">Nominal HR (Rp) (Opsional)</label>
+                        <input
+                            v-model="form.nominal_hr"
+                            type="number"
+                            placeholder="Contoh: 50000"
+                            class="w-full rounded-xl border-gray-200 px-4 py-2.5 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25"
+                        />
+                        <div v-if="form.errors.nominal_hr" class="mt-1 text-sm text-red-600">{{ form.errors.nominal_hr }}</div>
+                    </div>
+                    <div>
                         <label class="mb-1 block text-sm font-medium text-[#1B2333]">Deskripsi (opsional)</label>
                         <textarea
                             v-model="form.deskripsi"
@@ -88,6 +99,7 @@ const hapus = (item) => {
                     <thead class="bg-[#F4F7FC]">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#5B6472]">Nama</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#5B6472]">Nominal HR</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#5B6472]">Deskripsi</th>
                             <th class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#5B6472]">Aksi</th>
                         </tr>
@@ -95,6 +107,7 @@ const hapus = (item) => {
                     <tbody class="divide-y divide-gray-100">
                         <tr v-for="item in ekstra" :key="item.id" class="transition hover:bg-[#F4F7FC]/60">
                             <td class="px-6 py-4 text-sm font-medium text-[#0B1B36]">{{ item.nama }}</td>
+                            <td class="px-6 py-4 text-sm text-[#5B6472]">Rp {{ new Intl.NumberFormat('id-ID').format(item.nominal_hr || 0) }}</td>
                             <td class="px-6 py-4 text-sm text-[#5B6472]">{{ item.deskripsi || '-' }}</td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end gap-2">
@@ -104,7 +117,7 @@ const hapus = (item) => {
                             </td>
                         </tr>
                         <tr v-if="ekstra.length === 0">
-                            <td colspan="3" class="px-6 py-10 text-center text-sm text-[#5B6472]">Belum ada data ekstrakurikuler.</td>
+                            <td colspan="4" class="px-6 py-10 text-center text-sm text-[#5B6472]">Belum ada data ekstrakurikuler.</td>
                         </tr>
                     </tbody>
                 </table></div>

@@ -30,6 +30,8 @@ const menuAdmin = [
     { label: 'Lap. Presensi (Kelas)', route: 'admin.laporan.per-kelas', icon: 'chart-pie', match: ['admin.laporan.per-kelas'] },
     { label: 'Lap. Nilai (Kegiatan)', route: 'admin.laporan.nilai', icon: 'star', match: ['admin.laporan.nilai', 'admin.laporan.nilai.show'] },
     { label: 'Lap. Nilai (Kelas)', route: 'admin.laporan.nilai.per-kelas', icon: 'star', match: ['admin.laporan.nilai.per-kelas'] },
+    { label: 'Laporan HR Pelatih', route: 'admin.laporan-hr.index', icon: 'currency-dollar', match: ['admin.laporan-hr.*'] },
+    { label: 'Pengaturan Sistem', route: 'admin.setting.index', icon: 'cog', match: ['admin.setting.*'] },
     { label: 'Backup & Restore', route: 'admin.backup.index', icon: 'database', match: ['admin.backup.*'] },
     { label: 'Activity Log', route: 'admin.activity-log.index', icon: 'clock', match: ['admin.activity-log.*'] },
 ];
@@ -132,6 +134,8 @@ const isActive = (item) => item.match.some((pattern) => route().current(pattern)
                     <path v-else-if="m.icon === 'star'" stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.5a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385c.117.489-.417.877-.849.6l-4.725-2.885a.563.563 0 00-.588 0l-4.725 2.885c-.432.277-.966-.11-.849-.6l1.285-5.385a.562.562 0 00-.182-.557l-4.204-3.602c-.38-.325-.178-.947.321-.988l5.518-.442a.563.563 0 00.475-.345l2.125-5.11z" />
                     <path v-else-if="m.icon === 'database'" stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
                     <path v-else-if="m.icon === 'clock'" stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path v-else-if="m.icon === 'currency-dollar'" stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path v-else-if="m.icon === 'cog'" stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 {{ m.label }}
             </Link>
