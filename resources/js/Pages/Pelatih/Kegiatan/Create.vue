@@ -155,12 +155,25 @@ const warnaStatus = (status) => ({
                     </div>
 
                     <div>
-                        <label class="mb-1 block text-sm font-medium text-[#1B2333]">Foto Kegiatan (opsional)</label>
-                        <input type="file" accept="image/jpeg, image/png, image/webp" capture="environment"
-                            @change="handleImageUpload"
-                            class="block w-full text-sm text-[#5B6472] file:mr-4 file:rounded-full file:border-0 file:bg-[#3E6FD9]/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-[#3E6FD9] hover:file:bg-[#3E6FD9]/20" />
-                        <p class="mt-1 text-xs text-[#5B6472]">
-                            Di HP akan membuka kamera. Ukuran foto akan dikompres otomatis.
+                        <label class="mb-2 block text-sm font-medium text-[#1B2333]">Foto Kegiatan (opsional)</label>
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <!-- Input Kamera -->
+                            <div class="rounded-xl border border-gray-200 p-3">
+                                <label class="mb-2 block text-xs font-medium text-gray-500">Ambil langsung dari Kamera</label>
+                                <input type="file" accept="image/jpeg, image/png, image/webp" capture="environment"
+                                    @change="handleImageUpload"
+                                    class="block w-full text-sm text-[#5B6472] file:mr-4 file:rounded-full file:border-0 file:bg-[#3E6FD9]/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-[#3E6FD9] hover:file:bg-[#3E6FD9]/20" />
+                            </div>
+                            <!-- Input File -->
+                            <div class="rounded-xl border border-gray-200 p-3">
+                                <label class="mb-2 block text-xs font-medium text-gray-500">Pilih dari Galeri/File</label>
+                                <input type="file" accept="image/jpeg, image/png, image/webp"
+                                    @change="handleImageUpload"
+                                    class="block w-full text-sm text-[#5B6472] file:mr-4 file:rounded-full file:border-0 file:bg-[#3E6FD9]/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-[#3E6FD9] hover:file:bg-[#3E6FD9]/20" />
+                            </div>
+                        </div>
+                        <p class="mt-2 text-xs text-[#5B6472]">
+                            Ukuran foto akan dikompres otomatis.
                         </p>
                         <div v-if="isCompressing" class="mt-2 text-sm text-[#F2A93B] font-medium animate-pulse">
                             Sedang memproses dan mengompres foto...
