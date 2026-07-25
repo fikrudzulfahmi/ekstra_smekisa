@@ -13,7 +13,7 @@ class Kegiatan extends Model
     protected $table = 'kegiatan';
     protected $guarded = [];
 
-    protected $casts = ['tanggal' => 'date'];
+    protected $casts = ['tanggal' => 'date:Y-m-d'];
 
     public function tahunPelajaran()
     {
