@@ -1,6 +1,7 @@
 <script setup>
-import { reactive, computed } from 'vue';
+import { reactive, computed, ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import imageCompression from 'browser-image-compression';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
@@ -37,6 +38,39 @@ const submit = () => {
 const previewUrl = computed(() =>
     form.foto ? URL.createObjectURL(form.foto) : null
 );
+
+const isCompressing = ref(false);
+
+const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        alert('File harus berupa gambar');
+        return;
+    }
+
+    isCompressing.value = true;
+    try {
+        const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1280,
+            useWebWorker: true,
+            fileType: 'image/jpeg',
+        };
+        
+        const compressedFile = await imageCompression(file, options);
+        const newFile = new File([compressedFile], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+            type: 'image/jpeg',
+        });
+        form.foto = newFile;
+    } catch (error) {
+        console.error('Error compressing image:', error);
+        alert('Gagal mengompres gambar. Coba gambar lain atau matikan format HEIC pada kamera.');
+    } finally {
+        isCompressing.value = false;
+    }
+};
 
 const warnaStatus = (status) => ({
     hadir: 'bg-emerald-100 text-emerald-700',
@@ -110,10 +144,13 @@ const warnaStatus = (status) => ({
                                 class="h-32 rounded-xl border border-gray-200 object-cover" />
                         </div>
 
-                        <input type="file" accept="image/*" capture="environment"
-                            @change="form.foto = $event.target.files[0]"
+                        <input type="file" accept="image/jpeg, image/png, image/webp" capture="environment"
+                            @change="handleImageUpload"
                             class="block w-full text-sm text-[#5B6472] file:mr-4 file:rounded-full file:border-0 file:bg-[#3E6FD9]/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-[#3E6FD9] hover:file:bg-[#3E6FD9]/20" />
-                        <p class="mt-1 text-xs text-[#5B6472]">Kosongkan jika tidak ingin mengganti foto. Maks 5MB.</p>
+                        <p class="mt-1 text-xs text-[#5B6472]">Kosongkan jika tidak ingin mengganti foto. Di HP ukuran otomatis dikompres.</p>
+                        <div v-if="isCompressing" class="mt-2 text-sm text-[#F2A93B] font-medium animate-pulse">
+                            Sedang memproses dan mengompres foto...
+                        </div>
                         <div v-if="form.errors.foto" class="mt-1 text-sm text-red-600">{{ form.errors.foto }}</div>
 
                         <div v-if="form.foto" class="mt-2">
@@ -152,7 +189,7 @@ const warnaStatus = (status) => ({
                 </div>
 
                 <div class="flex justify-end">
-                    <PrimaryButton type="submit" :disabled="form.processing" class="px-8 py-3">
+                    <PrimaryButton type="submit" :disabled="form.processing || isCompressing" class="px-8 py-3">
                         {{ form.processing ? 'Menyimpan...' : 'Simpan Perubahan' }}
                     </PrimaryButton>
                 </div>
