@@ -12,8 +12,16 @@ const showAll = ref(false);
 
 const LIMIT = 5;
 
+// Parsing tanggal secara lokal agar tidak terjadi offset UTC
+const parseLocalDate = (t) => {
+    if (!t) return new Date();
+    const s = t.substring(0, 10); // ambil "YYYY-MM-DD"
+    const [y, m, d] = s.split('-').map(Number);
+    return new Date(y, m - 1, d); // konstruktor lokal, bukan UTC
+};
+
 const formatTanggal = (t) =>
-    new Date(t).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    parseLocalDate(t).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
 const hapus = (item) => {
     if (confirm(`Hapus kegiatan "${item.materi}" tanggal ${formatTanggal(item.tanggal)}?`)) {

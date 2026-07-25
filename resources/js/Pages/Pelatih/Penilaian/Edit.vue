@@ -9,8 +9,14 @@ const props = defineProps({
     nilaiGrup: Object,
 });
 
+// Ambil tanggal dalam format YYYY-MM-DD tanpa konversi UTC
+const toLocalDateStr = (t) => {
+    if (!t) return '';
+    return t.substring(0, 10);
+};
+
 const form = useForm({
-    tanggal: props.penilaian.tanggal?.substring(0, 10),
+    tanggal: toLocalDateStr(props.penilaian.tanggal),
     judul: props.penilaian.judul,
     deskripsi: props.penilaian.deskripsi ?? '',
     nilai: [],

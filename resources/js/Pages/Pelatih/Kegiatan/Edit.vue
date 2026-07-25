@@ -11,8 +11,14 @@ const props = defineProps({
     rekap: Object,
 });
 
+// Ambil tanggal dalam format YYYY-MM-DD tanpa konversi UTC
+const toLocalDateStr = (t) => {
+    if (!t) return '';
+    return t.substring(0, 10);
+};
+
 const form = useForm({
-    tanggal: props.kegiatan.tanggal?.substring(0, 10),
+    tanggal: toLocalDateStr(props.kegiatan.tanggal),
     materi: props.kegiatan.materi,
     deskripsi: props.kegiatan.deskripsi ?? '',
     foto: null,
