@@ -115,19 +115,26 @@ class BackupDatabaseSql extends Command
         $retentionCount = (int) env('BACKUP_RETENTION_COUNT', 7);
 
         if (!$serviceAccountPath || !$folderId) {
-            $this->warn('Upload Google Drive dilewati: Variabel GOOGLE_SERVICE_ACCOUNT_KEY_PATH atau GOOGLE_DRIVE_FOLDER_ID belum diset di .env');
+            $msg = 'Upload Google Drive dilewati: Variabel GOOGLE_SERVICE_ACCOUNT_KEY_PATH atau GOOGLE_DRIVE_FOLDER_ID belum diset di .env';
+            $this->warn($msg);
+            \Illuminate\Support\Facades\Log::warning($msg);
+            
             $this->info('Backup process completed successfully (file tersimpan lokal saja).');
             return;
         }
 
         if (!file_exists($serviceAccountPath)) {
-            $this->warn("Upload Google Drive dilewati: File JSON Service Account tidak ditemukan di path {$serviceAccountPath}");
+            $msg = "Upload Google Drive dilewati: File JSON Service Account tidak ditemukan di path {$serviceAccountPath}";
+            $this->warn($msg);
+            \Illuminate\Support\Facades\Log::warning($msg);
+            
             $this->info('Backup process completed successfully (file tersimpan lokal saja).');
             return;
         }
 
         try {
             $this->info('Mengautentikasi ke Google Drive menggunakan Service Account...');
+            \Illuminate\Support\Facades\Log::info('Mulai upload backup ke Google Drive...');
             
             $client = new \Google\Client();
             $client->setAuthConfig($serviceAccountPath);
@@ -150,7 +157,9 @@ class BackupDatabaseSql extends Command
                 'fields' => 'id'
             ]);
             
-            $this->info("Berhasil diunggah ke Google Drive dengan ID File: {$uploadedFile->id}");
+            $msg = "Berhasil diunggah ke Google Drive dengan ID File: {$uploadedFile->id}";
+            $this->info($msg);
+            \Illuminate\Support\Facades\Log::info($msg);
 
             // -----------------------------------------------------------------
             // RETENSI / AUTO-DELETE BACKUP LAMA
@@ -171,16 +180,21 @@ class BackupDatabaseSql extends Command
                 $filesToDelete = array_slice($files, $retentionCount);
                 foreach ($filesToDelete as $fileToDelete) {
                     $service->files->delete($fileToDelete->getId());
-                    $this->info("Menghapus backup lama di Drive: {$fileToDelete->getName()}");
+                    $msgDelete = "Menghapus backup lama di Drive: {$fileToDelete->getName()}";
+                    $this->info($msgDelete);
+                    \Illuminate\Support\Facades\Log::info($msgDelete);
                 }
             } else {
                 $this->info("Tidak ada backup lama yang perlu dihapus (total backup: " . count($files) . ").");
             }
 
         } catch (\Exception $e) {
-            $this->warn("Upload Google Drive gagal: " . $e->getMessage());
+            $msg = "Upload Google Drive gagal: " . $e->getMessage();
+            $this->warn($msg);
+            \Illuminate\Support\Facades\Log::error($msg);
         }
 
         $this->info('Backup process completed successfully.');
+
     }
 }
