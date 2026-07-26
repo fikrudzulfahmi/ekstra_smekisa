@@ -108,23 +108,13 @@ class BackupDatabaseSql extends Command
         }
 
         // ---------------------------------------------------------------------
-        // UPLOAD TO GOOGLE DRIVE (SERVICE ACCOUNT)
+        // UPLOAD TO GOOGLE DRIVE VIA WEBHOOK (APPS SCRIPT)
         // ---------------------------------------------------------------------
-        $serviceAccountPath = env('GOOGLE_SERVICE_ACCOUNT_KEY_PATH');
-        $folderId = env('GOOGLE_DRIVE_FOLDER_ID');
-        $retentionCount = (int) env('BACKUP_RETENTION_COUNT', 7);
+        $webhookUrl = env('GDRIVE_WEBHOOK_URL');
+        $webhookSecret = env('GDRIVE_WEBHOOK_SECRET', 'smekisa_rahasia_123');
 
-        if (!$serviceAccountPath || !$folderId) {
-            $msg = 'Upload Google Drive dilewati: Variabel GOOGLE_SERVICE_ACCOUNT_KEY_PATH atau GOOGLE_DRIVE_FOLDER_ID belum diset di .env';
-            $this->warn($msg);
-            \Illuminate\Support\Facades\Log::warning($msg);
-            
-            $this->info('Backup process completed successfully (file tersimpan lokal saja).');
-            return;
-        }
-
-        if (!file_exists($serviceAccountPath)) {
-            $msg = "Upload Google Drive dilewati: File JSON Service Account tidak ditemukan di path {$serviceAccountPath}";
+        if (!$webhookUrl) {
+            $msg = 'Upload Google Drive dilewati: Variabel GDRIVE_WEBHOOK_URL belum diset di .env';
             $this->warn($msg);
             \Illuminate\Support\Facades\Log::warning($msg);
             
@@ -133,59 +123,41 @@ class BackupDatabaseSql extends Command
         }
 
         try {
-            $this->info('Mengautentikasi ke Google Drive menggunakan Service Account...');
-            \Illuminate\Support\Facades\Log::info('Mulai upload backup ke Google Drive...');
+            $this->info('Mulai mengirim file ke Google Drive (via Webhook)...');
+            \Illuminate\Support\Facades\Log::info('Mulai upload backup ke Webhook Google Drive...');
             
-            $client = new \Google\Client();
-            $client->setAuthConfig($serviceAccountPath);
-            $client->addScope(\Google\Service\Drive::DRIVE);
-            $service = new \Google\Service\Drive($client);
-
-            $this->info('Mengunggah file ke Google Drive...');
-            $fileMetadata = new \Google\Service\Drive\DriveFile([
-                'name' => $filename,
-                'parents' => [$folderId]
+            // Konversi file ke base64 agar aman dari bug penguraian multipart di server webhook
+            $base64Content = base64_encode(file_get_contents($localPath));
+            
+            $response = \Illuminate\Support\Facades\Http::timeout(120)->post($webhookUrl, [
+                'secret' => $webhookSecret,
+                'filename' => $filename,
+                'file_base64' => $base64Content
             ]);
 
-            // Menggunakan stream untuk efisiensi memori jika file besar
-            $content = file_get_contents($localPath);
-            
-            $uploadedFile = $service->files->create($fileMetadata, [
-                'data' => $content,
-                'mimeType' => 'application/sql',
-                'uploadType' => 'multipart',
-                'fields' => 'id'
-            ]);
-            
-            $msg = "Berhasil diunggah ke Google Drive dengan ID File: {$uploadedFile->id}";
-            $this->info($msg);
-            \Illuminate\Support\Facades\Log::info($msg);
-
-            // -----------------------------------------------------------------
-            // RETENSI / AUTO-DELETE BACKUP LAMA
-            // -----------------------------------------------------------------
-            $this->info("Menjalankan logika retensi (menyimpan {$retentionCount} file terbaru)...");
-            
-            // Mencari file dengan awalan nama yang sama di folder target (tidak dibuang ke trash)
-            $optParams = [
-                'q' => "'{$folderId}' in parents and name contains 'backup_{$dbName}_' and mimeType = 'application/sql' and trashed = false",
-                'orderBy' => 'createdTime desc',
-                'fields' => 'files(id, name, createdTime)'
-            ];
-            
-            $results = $service->files->listFiles($optParams);
-            $files = $results->getFiles();
-            
-            if (count($files) > $retentionCount) {
-                $filesToDelete = array_slice($files, $retentionCount);
-                foreach ($filesToDelete as $fileToDelete) {
-                    $service->files->delete($fileToDelete->getId());
-                    $msgDelete = "Menghapus backup lama di Drive: {$fileToDelete->getName()}";
-                    $this->info($msgDelete);
-                    \Illuminate\Support\Facades\Log::info($msgDelete);
+            if ($response->successful()) {
+                $result = $response->json();
+                
+                if (isset($result['status']) && $result['status'] === 'success') {
+                    $msg = "Berhasil diunggah ke Google Drive dengan ID File: " . $result['fileId'];
+                    $this->info($msg);
+                    \Illuminate\Support\Facades\Log::info($msg);
+                    
+                    if (!empty($result['deleted'])) {
+                        foreach ($result['deleted'] as $deletedFile) {
+                            $msgDel = "Menghapus backup lama di Drive: {$deletedFile}";
+                            $this->info($msgDel);
+                            \Illuminate\Support\Facades\Log::info($msgDel);
+                        }
+                    } else {
+                        $this->info("Tidak ada backup lama yang perlu dihapus di Drive.");
+                    }
+                } else {
+                    $errorMsg = isset($result['message']) ? $result['message'] : 'Respon tidak dikenali dari Webhook.';
+                    throw new \Exception("Webhook menolak permintaan: " . $errorMsg);
                 }
             } else {
-                $this->info("Tidak ada backup lama yang perlu dihapus (total backup: " . count($files) . ").");
+                throw new \Exception("HTTP Error " . $response->status() . ": " . $response->body());
             }
 
         } catch (\Exception $e) {
