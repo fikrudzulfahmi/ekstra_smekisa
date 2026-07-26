@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { showConfirm } from '@/utils/sweetalert';
 
 const props = defineProps({ penilaian: Array });
 
@@ -30,9 +31,11 @@ const warnaRata = (rata) => {
 };
 
 const hapus = (item) => {
-    if (confirm(`Hapus penilaian "${item.judul}" tanggal ${formatTanggal(item.tanggal)}?`)) {
-        router.delete(route('pelatih.penilaian.destroy', item.id), { preserveScroll: true });
-    }
+    showConfirm(`Hapus penilaian "${item.judul}" tanggal ${formatTanggal(item.tanggal)}?`).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(route('pelatih.penilaian.destroy', item.id), { preserveScroll: true });
+        }
+    });
 };
 
 const isFilterActive = computed(() => search.value.trim() !== '' || dateFrom.value !== '' || dateTo.value !== '');

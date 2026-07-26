@@ -3,6 +3,7 @@ import { ref, watch } from 'vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Modal from '@/Components/Modal.vue';
+import { showWarningAlert, showConfirm } from '@/utils/sweetalert';
 
 const props = defineProps({
     siswa: Array,
@@ -16,7 +17,7 @@ const syncForm = useForm({ kelas_id: '' });
 
 const doSync = () => {
     if (!syncForm.kelas_id) {
-        alert('Pilih kelas dulu untuk sinkronisasi.');
+        showWarningAlert('Pilih kelas dulu untuk sinkronisasi.');
         return;
     }
     syncForm.post(route('admin.siswa.sync'), { preserveScroll: true });
@@ -76,9 +77,11 @@ const ubahEkstra = (siswa, event) => {
 };
 
 const hapus = (item) => {
-    if (confirm(`Hapus siswa ${item.nama}?`)) {
-        router.delete(route('admin.siswa.destroy', item.id), { preserveScroll: true });
-    }
+    showConfirm(`Hapus siswa ${item.nama}?`).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(route('admin.siswa.destroy', item.id), { preserveScroll: true });
+        }
+    });
 };
 </script>
 

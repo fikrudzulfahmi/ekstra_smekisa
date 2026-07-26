@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { showConfirm } from '@/utils/sweetalert';
 
 defineProps({
     tahunPelajaran: Array,
@@ -36,9 +37,11 @@ const setAktif = (item) => {
 };
 
 const hapus = (item) => {
-    if (confirm(`Hapus tahun pelajaran ${item.nama}?`)) {
-        router.delete(route('admin.tahun-pelajaran.destroy', item.id));
-    }
+    showConfirm(`Hapus tahun pelajaran ${item.nama}?`).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(route('admin.tahun-pelajaran.destroy', item.id));
+        }
+    });
 };
 </script>
 

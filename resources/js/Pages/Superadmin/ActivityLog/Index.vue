@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { showConfirm } from '@/utils/sweetalert';
 
 const props = defineProps({ activities: Object });
 
@@ -67,9 +68,11 @@ const roleLabel = (role) => {
 // ─── Bersihkan Log ────────────────────────────────────────────────────────────
 const form = useForm({});
 const bersihkanLog = () => {
-    if (confirm('Hapus SEMUA riwayat log aktivitas? Aksi ini tidak dapat dibatalkan.')) {
-        form.post(route('superadmin.activity-log.clear'), { preserveScroll: true });
-    }
+    showConfirm('Hapus SEMUA riwayat log aktivitas? Aksi ini tidak dapat dibatalkan.', 'Bersihkan Log').then((result) => {
+        if (result.isConfirmed) {
+            form.post(route('superadmin.activity-log.clear'), { preserveScroll: true });
+        }
+    });
 };
 
 // ─── Detail Modal ─────────────────────────────────────────────────────────────

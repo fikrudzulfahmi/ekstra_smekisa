@@ -2,6 +2,7 @@
 import { reactive } from 'vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { showWarningAlert } from '@/utils/sweetalert';
 
 const props = defineProps({
     laporan: Array,
@@ -19,7 +20,7 @@ const filter = reactive({
 
 const terapkan = () => {
     if (!filter.kelas_id) {
-        alert('Pilih kelas dulu.');
+        showWarningAlert('Pilih kelas dulu.');
         return;
     }
     router.get(route('admin.laporan.per-kelas'), { ...filter }, {
@@ -32,7 +33,7 @@ const cetak = () => window.print();
 
 const exportExcel = () => {
     if (!filter.kelas_id) {
-        alert('Pilih kelas dulu.');
+        showWarningAlert('Pilih kelas dulu.');
         return;
     }
     // Buka di tab baru supaya halaman laporan tidak ikut ter-reload

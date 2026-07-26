@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { showConfirm } from '@/utils/sweetalert';
 
 defineProps({
     ekstra: Array,
@@ -34,9 +35,11 @@ const resetForm = () => {
 };
 
 const hapus = (item) => {
-    if (confirm(`Hapus ekstrakurikuler ${item.nama}?`)) {
-        router.delete(route('admin.ekstra.destroy', item.id));
-    }
+    showConfirm(`Hapus ekstrakurikuler ${item.nama}?`).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(route('admin.ekstra.destroy', item.id));
+        }
+    });
 };
 </script>
 

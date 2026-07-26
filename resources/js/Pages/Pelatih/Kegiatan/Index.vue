@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { showConfirm } from '@/utils/sweetalert';
 
 const props = defineProps({ kegiatan: Array });
 
@@ -24,9 +25,11 @@ const formatTanggal = (t) =>
     parseLocalDate(t).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
 const hapus = (item) => {
-    if (confirm(`Hapus kegiatan "${item.materi}" tanggal ${formatTanggal(item.tanggal)}?`)) {
-        router.delete(route('pelatih.kegiatan.destroy', item.id), { preserveScroll: true });
-    }
+    showConfirm(`Hapus kegiatan "${item.materi}" tanggal ${formatTanggal(item.tanggal)}?`).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(route('pelatih.kegiatan.destroy', item.id), { preserveScroll: true });
+        }
+    });
 };
 
 const isFilterActive = computed(() => search.value.trim() !== '' || dateFrom.value !== '' || dateTo.value !== '');

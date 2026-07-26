@@ -4,6 +4,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 import imageCompression from 'browser-image-compression';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { showErrorAlert } from '@/utils/sweetalert';
 
 const props = defineProps({
     kegiatan: Object,
@@ -54,7 +55,7 @@ const handleImageUpload = async (event) => {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-        alert('File harus berupa gambar');
+        showErrorAlert('File harus berupa gambar');
         return;
     }
 
@@ -74,7 +75,7 @@ const handleImageUpload = async (event) => {
         form.foto = newFile;
     } catch (error) {
         console.error('Error compressing image:', error);
-        alert('Gagal mengompres gambar. Coba gambar lain atau matikan format HEIC pada kamera.');
+        showErrorAlert('Gagal mengompres gambar. Coba gambar lain atau matikan format HEIC pada kamera.');
     } finally {
         isCompressing.value = false;
     }

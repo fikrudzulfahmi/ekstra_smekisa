@@ -2,6 +2,7 @@
 import { ref, computed, reactive } from 'vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { showConfirm } from '@/utils/sweetalert';
 
 const props = defineProps({ users: Array });
 
@@ -99,9 +100,11 @@ const simpanPassword = () => {
 
 // ─── Hapus ────────────────────────────────────────────────────────────────────
 const hapus = (user) => {
-    if (confirm(`Hapus akun "${user.name}" (${user.email})? Aksi ini tidak dapat dibatalkan.`)) {
-        router.delete(route('superadmin.akun.destroy', user.id), { preserveScroll: true });
-    }
+    showConfirm(`Hapus akun "${user.name}" (${user.email})? Aksi ini tidak dapat dibatalkan.`).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(route('superadmin.akun.destroy', user.id), { preserveScroll: true });
+        }
+    });
 };
 
 const tutupModal = () => { modalMode.value = null; };

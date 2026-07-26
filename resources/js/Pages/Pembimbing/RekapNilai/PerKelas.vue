@@ -2,6 +2,7 @@
 import { reactive } from 'vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { showWarningAlert } from '@/utils/sweetalert';
 
 const props = defineProps({
     laporan: Array,
@@ -17,7 +18,7 @@ const filter = reactive({
 
 const terapkan = () => {
     if (!filter.kelas_id) {
-        alert('Pilih kelas terlebih dahulu.');
+        showWarningAlert('Pilih kelas terlebih dahulu.');
         return;
     }
     router.get(route('pembimbing.rekap-nilai.per-kelas'), { ...filter }, {
@@ -30,7 +31,7 @@ const cetak = () => window.print();
 
 const exportExcel = () => {
     if (!filter.kelas_id) {
-        alert('Pilih kelas dulu.');
+        showWarningAlert('Pilih kelas dulu.');
         return;
     }
     window.open(

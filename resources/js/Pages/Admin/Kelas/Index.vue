@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { showConfirm } from '@/utils/sweetalert';
 
 defineProps({
     kelas: Array,
@@ -32,9 +33,11 @@ const resetForm = () => {
 };
 
 const hapus = (item) => {
-    if (confirm(`Hapus kelas ${item.nama}?`)) {
-        router.delete(route('admin.kelas.destroy', item.id));
-    }
+    showConfirm(`Hapus kelas ${item.nama}?`).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(route('admin.kelas.destroy', item.id));
+        }
+    });
 };
 </script>
 

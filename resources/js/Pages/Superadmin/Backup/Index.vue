@@ -2,6 +2,7 @@
 import { Head, useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref } from 'vue';
+import { showConfirm, showWarningAlert } from '@/utils/sweetalert';
 
 const props = defineProps({ backups: Array });
 
@@ -16,9 +17,11 @@ const unduh = (path) => {
 };
 
 const hapus = (path) => {
-    if (confirm('Hapus file backup ini?')) {
-        router.delete(route('superadmin.backup.destroy'), { data: { path }, preserveScroll: true });
-    }
+    showConfirm('Hapus file backup ini?').then((result) => {
+        if (result.isConfirmed) {
+            router.delete(route('superadmin.backup.destroy'), { data: { path }, preserveScroll: true });
+        }
+    });
 };
 
 const restoreFile = ref(null);
@@ -30,18 +33,20 @@ const handleFileUpload = (event) => {
 
 const doRestore = () => {
     if (!formRestore.sql_file) {
-        alert('Pilih file SQL terlebih dahulu.');
+        showWarningAlert('Pilih file SQL terlebih dahulu.');
         return;
     }
-    if (confirm('PERHATIAN! Proses restore akan MENIMPA seluruh database saat ini. Lanjutkan?')) {
-        formRestore.post(route('superadmin.backup.restore'), {
-            preserveScroll: true,
-            onSuccess: () => {
-                restoreFile.value.value = '';
-                formRestore.reset();
-            }
-        });
-    }
+    showConfirm('PERHATIAN! Proses restore akan MENIMPA seluruh database saat ini. Lanjutkan?', 'Peringatan Restore').then((result) => {
+        if (result.isConfirmed) {
+            formRestore.post(route('superadmin.backup.restore'), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    restoreFile.value.value = '';
+                    formRestore.reset();
+                }
+            });
+        }
+    });
 };
 </script>
 

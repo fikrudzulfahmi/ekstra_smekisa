@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { showConfirm } from '@/utils/sweetalert';
 
 const props = defineProps({
     pelatih: Array,
@@ -45,9 +46,11 @@ const resetForm = () => {
 };
 
 const hapus = (item) => {
-    if (confirm(`Hapus pelatih ${item.nama}? Ini juga akan menghapus akun login-nya.`)) {
-        router.delete(route('pembimbing.pelatih.destroy', item.id));
-    }
+    showConfirm(`Hapus pelatih ${item.nama}? Ini juga akan menghapus akun login-nya.`).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(route('pembimbing.pelatih.destroy', item.id));
+        }
+    });
 };
 </script>
 

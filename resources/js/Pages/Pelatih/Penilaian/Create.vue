@@ -4,6 +4,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { showErrorAlert, showWarningAlert } from '@/utils/sweetalert';
 
 const props = defineProps({
     daftarEkstra: Array,
@@ -39,7 +40,7 @@ const loadSiswa = async () => {
             nilaiMap[s.id] = null;
         });
     } catch (e) {
-        alert('Gagal memuat data siswa.');
+        showErrorAlert('Gagal memuat data siswa.');
     } finally {
         loadingSiswa.value = false;
     }
@@ -65,7 +66,7 @@ const submit = () => {
     }));
 
     if (form.nilai.some((n) => n.nilai === null)) {
-        alert('Semua siswa harus diisi nilainya (0–100) sebelum disimpan.');
+        showWarningAlert('Semua siswa harus diisi nilainya (0–100) sebelum disimpan.');
         return;
     }
 

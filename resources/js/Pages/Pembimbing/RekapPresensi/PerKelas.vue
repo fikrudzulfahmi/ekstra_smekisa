@@ -2,6 +2,7 @@
 import { reactive, watch } from 'vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { showWarningAlert } from '@/utils/sweetalert';
 
 const props = defineProps({
     laporan: Array,
@@ -22,7 +23,7 @@ const filter = reactive({
 
 const terapkan = () => {
     if (!filter.kelas_id || !filter.ekstra_id) {
-        alert('Pilih kelas dan ekstrakurikuler terlebih dahulu.');
+        showWarningAlert('Pilih kelas dan ekstrakurikuler terlebih dahulu.');
         return;
     }
     router.get(route('pembimbing.rekap-presensi.per-kelas'), { ...filter }, {
