@@ -47,7 +47,7 @@ const mobileMenuOpen = ref(false);
                         <img src="/images/landing/logo-sekolah.png" alt="Logo SMEKISA" class="h-9 w-9 object-contain" />
                         <div class="hidden sm:block leading-tight">
                             <p class="font-['Poppins'] text-sm font-bold tracking-wide text-[#0B1B36]">SMEKISA</p>
-                            <p class="text-[10px] font-medium text-[#5B6472]">Kota Blitar</p>
+                            <p class="text-[10px] font-medium text-[#5B6472]">Skill by Discipline and Religious</p>
                         </div>
                     </div>
 
