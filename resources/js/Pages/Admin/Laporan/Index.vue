@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
@@ -13,6 +13,9 @@ const props = defineProps({
 
 const filterEkstra = ref(props.filters?.ekstra_id ?? '');
 watch(filterEkstra, (val) => {
+    search.value = '';
+    dateFrom.value = '';
+    dateTo.value = '';
     router.get(route('admin.laporan.index'), { ekstra_id: val }, {
         preserveState: true,
         preserveScroll: true,
@@ -20,8 +23,20 @@ watch(filterEkstra, (val) => {
     });
 });
 
+// Client-side search & date range
+const search = ref('');
+const dateFrom = ref('');
+const dateTo = ref('');
+
+const parseLocalDate = (t) => {
+    if (!t) return new Date();
+    const s = t.substring(0, 10);
+    const [y, m, d] = s.split('-').map(Number);
+    return new Date(y, m - 1, d);
+};
+
 const formatTanggal = (tgl) =>
-    new Date(tgl).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    parseLocalDate(tgl).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 
 const persentaseHadir = (item) => {
     if (item.total_count === 0) return 0;
@@ -33,6 +48,36 @@ const cetak = () => window.print();
 const fotoModal = ref(null);
 const bukaFoto = (path) => { fotoModal.value = `/storage/${path}`; };
 const tutupFoto = () => { fotoModal.value = null; };
+
+const isFilterActive = computed(() => search.value.trim() !== '' || dateFrom.value !== '' || dateTo.value !== '');
+
+const filtered = computed(() => {
+    const q = search.value.trim().toLowerCase();
+    return props.kegiatan.filter((item) => {
+        const matchQ = !q
+            || item.materi.toLowerCase().includes(q)
+            || (item.ekstra?.nama ?? '').toLowerCase().includes(q)
+            || (item.pelatih?.nama ?? '').toLowerCase().includes(q);
+        const tgl = item.tanggal?.substring(0, 10);
+        const matchFrom = !dateFrom.value || tgl >= dateFrom.value;
+        const matchTo = !dateTo.value || tgl <= dateTo.value;
+        return matchQ && matchFrom && matchTo;
+    });
+});
+
+const ringkasanFiltered = computed(() => ({
+    total_kegiatan: filtered.value.length,
+    total_hadir: filtered.value.reduce((s, i) => s + (i.hadir_count ?? 0), 0),
+    total_izin: filtered.value.reduce((s, i) => s + (i.izin_count ?? 0), 0),
+    total_sakit: filtered.value.reduce((s, i) => s + (i.sakit_count ?? 0), 0),
+    total_alpha: filtered.value.reduce((s, i) => s + (i.alpha_count ?? 0), 0),
+}));
+
+const resetFilter = () => {
+    search.value = '';
+    dateFrom.value = '';
+    dateTo.value = '';
+};
 </script>
 
 <template>
@@ -47,43 +92,92 @@ const tutupFoto = () => { fotoModal.value = null; };
                 Tahun Pelajaran Aktif: <b class="text-[#0B1B36]">{{ tahunAktif?.nama ?? '-' }}</b>
             </div>
 
-            <!-- Kartu Ringkasan -->
+            <!-- Kartu Ringkasan (dinamis mengikuti filter) -->
             <div class="grid grid-cols-2 gap-3 md:grid-cols-5">
                 <div class="rounded-2xl bg-white p-4 text-center shadow-sm ring-1 ring-black/5">
-                    <div class="font-['Poppins'] text-2xl font-bold text-[#0B1B36]">{{ ringkasan.total_kegiatan }}</div>
+                    <div class="font-['Poppins'] text-2xl font-bold text-[#0B1B36]">{{ isFilterActive ? ringkasanFiltered.total_kegiatan : ringkasan.total_kegiatan }}</div>
                     <div class="mt-0.5 text-xs text-[#5B6472]">Total Kegiatan</div>
                 </div>
                 <div class="rounded-2xl bg-emerald-50 p-4 text-center">
-                    <div class="font-['Poppins'] text-2xl font-bold text-emerald-700">{{ ringkasan.total_hadir }}</div>
+                    <div class="font-['Poppins'] text-2xl font-bold text-emerald-700">{{ isFilterActive ? ringkasanFiltered.total_hadir : ringkasan.total_hadir }}</div>
                     <div class="mt-0.5 text-xs text-emerald-600">Total Hadir</div>
                 </div>
                 <div class="rounded-2xl bg-yellow-50 p-4 text-center">
-                    <div class="font-['Poppins'] text-2xl font-bold text-yellow-700">{{ ringkasan.total_izin }}</div>
+                    <div class="font-['Poppins'] text-2xl font-bold text-yellow-700">{{ isFilterActive ? ringkasanFiltered.total_izin : ringkasan.total_izin }}</div>
                     <div class="mt-0.5 text-xs text-yellow-600">Total Izin</div>
                 </div>
                 <div class="rounded-2xl bg-orange-50 p-4 text-center">
-                    <div class="font-['Poppins'] text-2xl font-bold text-orange-700">{{ ringkasan.total_sakit }}</div>
+                    <div class="font-['Poppins'] text-2xl font-bold text-orange-700">{{ isFilterActive ? ringkasanFiltered.total_sakit : ringkasan.total_sakit }}</div>
                     <div class="mt-0.5 text-xs text-orange-600">Total Sakit</div>
                 </div>
                 <div class="rounded-2xl bg-red-50 p-4 text-center">
-                    <div class="font-['Poppins'] text-2xl font-bold text-red-700">{{ ringkasan.total_alpha }}</div>
+                    <div class="font-['Poppins'] text-2xl font-bold text-red-700">{{ isFilterActive ? ringkasanFiltered.total_alpha : ringkasan.total_alpha }}</div>
                     <div class="mt-0.5 text-xs text-red-600">Total Alpha</div>
                 </div>
             </div>
 
             <!-- Filter & Tabel -->
             <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
-                <div class="flex flex-wrap items-center gap-3 border-b border-gray-100 p-4">
-                    <label class="text-sm font-medium text-[#1B2333]">Filter Ekstra:</label>
-                    <select v-model="filterEkstra"
-                        class="rounded-xl border-gray-200 py-2 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25">
-                        <option value="">Semua Ekstra</option>
-                        <option v-for="e in daftarEkstra" :key="e.id" :value="e.id">{{ e.nama }}</option>
-                    </select>
-                    <button @click="cetak"
-                        class="ml-auto rounded-full bg-[#F4F7FC] px-4 py-2 text-sm font-medium text-[#1B2333] transition hover:bg-gray-200 print:hidden">
-                        🖨️ Cetak
-                    </button>
+                <!-- Filter Bar -->
+                <div class="border-b border-gray-100 p-4 space-y-3">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+                        <!-- Filter Ekstra -->
+                        <div>
+                            <label class="mb-1 block text-xs font-medium text-[#5B6472]">Filter Ekstra</label>
+                            <select v-model="filterEkstra"
+                                class="rounded-xl border-gray-200 py-2.5 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25">
+                                <option value="">Semua Ekstra</option>
+                                <option v-for="e in daftarEkstra" :key="e.id" :value="e.id">{{ e.nama }}</option>
+                            </select>
+                        </div>
+
+                        <!-- Search -->
+                        <div class="flex-1">
+                            <label class="mb-1 block text-xs font-medium text-[#5B6472]">Cari kegiatan</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                <input v-model="search" type="text" placeholder="Materi, ekstra, atau pelatih..."
+                                    class="w-full rounded-xl border-gray-200 py-2.5 pl-9 pr-4 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25" />
+                            </div>
+                        </div>
+
+                        <!-- Date From -->
+                        <div class="sm:w-36">
+                            <label class="mb-1 block text-xs font-medium text-[#5B6472]">Dari tanggal</label>
+                            <input v-model="dateFrom" type="date"
+                                class="w-full rounded-xl border-gray-200 px-3 py-2.5 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25" />
+                        </div>
+
+                        <!-- Date To -->
+                        <div class="sm:w-36">
+                            <label class="mb-1 block text-xs font-medium text-[#5B6472]">Sampai tanggal</label>
+                            <input v-model="dateTo" type="date"
+                                class="w-full rounded-xl border-gray-200 px-3 py-2.5 text-sm text-[#1B2333] shadow-sm focus:border-[#3E6FD9] focus:ring-2 focus:ring-[#3E6FD9]/25" />
+                        </div>
+
+                        <!-- Reset -->
+                        <button v-if="isFilterActive" @click="resetFilter" type="button"
+                            class="flex shrink-0 items-center gap-1.5 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-[#5B6472] transition hover:bg-gray-100">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Reset
+                        </button>
+
+                        <!-- Cetak -->
+                        <button @click="cetak"
+                            class="ml-auto rounded-full bg-[#F4F7FC] px-4 py-2.5 text-sm font-medium text-[#1B2333] transition hover:bg-gray-200 print:hidden shrink-0">
+                            🖨️ Cetak
+                        </button>
+                    </div>
+
+                    <!-- Result count -->
+                    <p class="text-xs text-[#5B6472]">
+                        Menampilkan <span class="font-semibold text-[#0B1B36]">{{ filtered.length }}</span>
+                        dari <span class="font-semibold text-[#0B1B36]">{{ kegiatan.length }}</span> kegiatan
+                    </p>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -103,7 +197,7 @@ const tutupFoto = () => { fotoModal.value = null; };
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
-                            <tr v-for="item in kegiatan" :key="item.id" class="transition hover:bg-[#F4F7FC]/60">
+                            <tr v-for="item in filtered" :key="item.id" class="transition hover:bg-[#F4F7FC]/60">
                                 <td class="px-4 py-3 text-sm text-[#5B6472]">{{ formatTanggal(item.tanggal) }}</td>
                                 <td class="px-4 py-3 text-sm">
                                     <span class="rounded-full bg-[#3E6FD9]/10 px-2.5 py-0.5 text-xs font-medium text-[#3E6FD9]">{{ item.ekstra?.nama }}</span>
@@ -131,9 +225,9 @@ const tutupFoto = () => { fotoModal.value = null; };
                                     </span>
                                 </td>
                             </tr>
-                            <tr v-if="kegiatan.length === 0">
+                            <tr v-if="filtered.length === 0">
                                 <td colspan="10" class="px-4 py-10 text-center text-sm text-[#5B6472]">
-                                    Belum ada data kegiatan untuk ditampilkan.
+                                    {{ isFilterActive ? 'Tidak ada data yang cocok dengan filter.' : 'Belum ada data kegiatan untuk ditampilkan.' }}
                                 </td>
                             </tr>
                         </tbody>
