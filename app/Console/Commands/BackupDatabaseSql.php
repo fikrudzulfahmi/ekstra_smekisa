@@ -129,7 +129,9 @@ class BackupDatabaseSql extends Command
             // Konversi file ke base64 agar aman dari bug penguraian multipart di server webhook
             $base64Content = base64_encode(file_get_contents($localPath));
             
-            $response = \Illuminate\Support\Facades\Http::timeout(120)->post($webhookUrl, [
+            // Wajib gunakan asForm() agar data dikirim sebagai url-encoded
+            // Jika dikirim sebagai JSON, parameter e.parameter di Google Apps Script tidak akan bisa membacanya
+            $response = \Illuminate\Support\Facades\Http::asForm()->timeout(120)->post($webhookUrl, [
                 'secret' => $webhookSecret,
                 'filename' => $filename,
                 'file_base64' => $base64Content
