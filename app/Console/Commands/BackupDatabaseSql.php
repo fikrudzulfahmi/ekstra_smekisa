@@ -50,8 +50,30 @@ class BackupDatabaseSql extends Command
             ->setHost(config('database.connections.mysql.host'))
             ->setPort(config('database.connections.mysql.port'));
 
-        $dumpPath = config('database.connections.mysql.dump.dump_binary_path');
-        if ($dumpPath) {
+        // Resolve binary path: config → env fallback → XAMPP Windows default
+        $dumpPath = config('database.connections.mysql.dump.dump_binary_path')
+            ?: env('DUMP_BINARY_PATH', '');
+
+        // Jika masih kosong, coba deteksi otomatis lokasi XAMPP / common paths di Windows
+        if (empty($dumpPath) && strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $candidates = [
+                'C:\\xampp\\mysql\\bin',
+                'C:\\xampp64\\mysql\\bin',
+                'D:\\xampp\\mysql\\bin',
+                'C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin',
+                'C:\\Program Files\\MySQL\\MySQL Server 5.7\\bin',
+            ];
+            foreach ($candidates as $candidate) {
+                if (file_exists($candidate . '\\mysqldump.exe')) {
+                    $dumpPath = $candidate;
+                    break;
+                }
+            }
+        }
+
+        if (!empty($dumpPath)) {
+            // Pastikan tidak ada trailing slash/backslash
+            $dumpPath = rtrim($dumpPath, '/\\');
             $dumper->setDumpBinaryPath($dumpPath);
         }
 
