@@ -14,6 +14,9 @@ use App\Http\Controllers\Admin\LaporanHrController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Pelatih\KegiatanController;
 use App\Http\Controllers\Pelatih\PenilaianController;
+use App\Http\Controllers\Superadmin\AkunController as SuperadminAkunController;
+use App\Http\Controllers\Superadmin\BackupController as SuperadminBackupController;
+use App\Http\Controllers\Superadmin\ActivityLogController as SuperadminActivityLogController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -34,13 +37,36 @@ Route::get('/', function () {
 // Redirect setelah login → arahkan sesuai role
 Route::get('/dashboard', function () {
     $role = auth()->user()->role;
-    if ($role === 'admin') {
+    if ($role === 'superadmin') {
+        return redirect()->route('superadmin.akun.index');
+    } elseif ($role === 'admin') {
         return redirect()->route('admin.dashboard');
     } elseif ($role === 'pembimbing') {
         return redirect()->route('pembimbing.dashboard');
     }
     return redirect()->route('pelatih.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Grup route khusus Superadmin
+Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+    // Akun management
+    Route::get('akun', [SuperadminAkunController::class, 'index'])->name('akun.index');
+    Route::post('akun', [SuperadminAkunController::class, 'store'])->name('akun.store');
+    Route::put('akun/{user}', [SuperadminAkunController::class, 'update'])->name('akun.update');
+    Route::patch('akun/{user}/reset-password', [SuperadminAkunController::class, 'resetPassword'])->name('akun.reset-password');
+    Route::delete('akun/{user}', [SuperadminAkunController::class, 'destroy'])->name('akun.destroy');
+
+    // Backup & Restore
+    Route::get('backup', [SuperadminBackupController::class, 'index'])->name('backup.index');
+    Route::post('backup', [SuperadminBackupController::class, 'create'])->name('backup.create');
+    Route::delete('backup', [SuperadminBackupController::class, 'destroy'])->name('backup.destroy');
+    Route::get('backup/download', [SuperadminBackupController::class, 'download'])->name('backup.download');
+    Route::post('backup/restore', [SuperadminBackupController::class, 'restore'])->name('backup.restore');
+
+    // Activity Log
+    Route::get('activity-log', [SuperadminActivityLogController::class, 'index'])->name('activity-log.index');
+    Route::post('activity-log/clear', [SuperadminActivityLogController::class, 'clear'])->name('activity-log.clear');
+});
 
 // Grup route khusus Admin
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {

@@ -15,9 +15,6 @@ const page = usePage();
 const role = computed(() => page.props.auth?.user?.role);
 
 // Menu untuk admin
-// "match" berisi daftar nama route PERSIS yang membuat menu ini aktif.
-// Tidak pakai wildcard prefix supaya menu yang berbagi awalan (mis. admin.laporan.*)
-// tidak ikut nyala bersamaan.
 const menuAdmin = [
     { label: 'Dashboard', route: 'admin.dashboard', icon: 'home', match: ['admin.dashboard'] },
     { label: 'Tahun Pelajaran', route: 'admin.tahun-pelajaran.index', icon: 'calendar', match: ['admin.tahun-pelajaran.*'] },
@@ -34,6 +31,13 @@ const menuAdmin = [
     { label: 'Pengaturan Sistem', route: 'admin.setting.index', icon: 'cog', match: ['admin.setting.*'] },
     { label: 'Backup & Restore', route: 'admin.backup.index', icon: 'database', match: ['admin.backup.*'] },
     { label: 'Activity Log', route: 'admin.activity-log.index', icon: 'clock', match: ['admin.activity-log.*'] },
+];
+
+// Menu untuk superadmin
+const menuSuperadmin = [
+    { label: 'Kelola Akun', route: 'superadmin.akun.index', icon: 'shield', match: ['superadmin.akun.*'] },
+    { label: 'Backup & Restore', route: 'superadmin.backup.index', icon: 'database', match: ['superadmin.backup.*'] },
+    { label: 'Activity Log', route: 'superadmin.activity-log.index', icon: 'clock', match: ['superadmin.activity-log.*'] },
 ];
 
 // Menu untuk pelatih
@@ -58,14 +62,19 @@ const menuPembimbing = [
 ];
 
 const menu = computed(() => {
+    if (role.value === 'superadmin') return menuSuperadmin;
     if (role.value === 'admin') return menuAdmin;
     if (role.value === 'pembimbing') return menuPembimbing;
     return menuPelatih;
 });
 
-const roleLabel = computed(() =>
-    role.value === 'admin' ? 'Admin' : role.value === 'pelatih' ? 'Pelatih' : role.value === 'pembimbing' ? 'Pembina' : role.value,
-);
+const roleLabel = computed(() => {
+    if (role.value === 'superadmin') return 'Super Admin';
+    if (role.value === 'admin') return 'Admin';
+    if (role.value === 'pelatih') return 'Pelatih';
+    if (role.value === 'pembimbing') return 'Pembina';
+    return role.value;
+});
 
 const isActive = (item) => item.match.some((pattern) => route().current(pattern));
 </script>
@@ -136,6 +145,7 @@ const isActive = (item) => item.match.some((pattern) => route().current(pattern)
                     <path v-else-if="m.icon === 'clock'" stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     <path v-else-if="m.icon === 'currency-dollar'" stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     <path v-else-if="m.icon === 'cog'" stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path v-else-if="m.icon === 'shield'" stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                 </svg>
                 {{ m.label }}
             </Link>
