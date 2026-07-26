@@ -22,7 +22,7 @@ class BackupDatabaseSql extends Command
      *
      * @var string
      */
-    protected $description = 'Backup database to SQL format and upload to Google Drive (with auto-cleanup on Drive only)';
+    protected $description = 'Backup database to SQL format and upload to Google Drive using Service Account';
 
     /**
      * Execute the console command.
@@ -31,8 +31,9 @@ class BackupDatabaseSql extends Command
     {
         $this->info('Starting database backup to SQL format...');
 
-        $date = Carbon::now()->format('Y-m-d-H-i-s');
-        $filename = "Ekstrakurikuler-{$date}.sql";
+        $dbName = config('database.connections.mysql.database');
+        $date = Carbon::now()->format('Ymd_His');
+        $filename = "backup_{$dbName}_{$date}.sql";
         
         $localDisk = Storage::disk('local');
         if (!$localDisk->exists('backups')) {
@@ -77,13 +78,13 @@ class BackupDatabaseSql extends Command
             $dumper->setDumpBinaryPath($dumpPath);
         }
 
-        // Fix for Windows "Can't create TCP/IP socket (10106)" error via web server
+        // Fix for Windows "Can't create TCP/IP socket" error via web server
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             if (!getenv('SystemRoot')) {
-                putenv('SystemRoot=C:\Windows');
+                putenv('SystemRoot=C:\\Windows');
             }
             if (!isset($_ENV['SystemRoot'])) {
-                $_ENV['SystemRoot'] = 'C:\Windows';
+                $_ENV['SystemRoot'] = 'C:\\Windows';
             }
         }
 
@@ -106,46 +107,78 @@ class BackupDatabaseSql extends Command
             throw $e;
         }
 
-        // Upload to Google Drive
-        $this->info('Uploading to Google Drive...');
-        $googleDisk = Storage::disk('google');
-        $googlePath = "Ekstrakurikuler/{$filename}";
-        
-        $fileStream = fopen($localPath, 'r');
-        $googleDisk->put($googlePath, $fileStream);
-        if (is_resource($fileStream)) {
-            fclose($fileStream);
+        // ---------------------------------------------------------------------
+        // UPLOAD TO GOOGLE DRIVE (SERVICE ACCOUNT)
+        // ---------------------------------------------------------------------
+        $serviceAccountPath = env('GOOGLE_SERVICE_ACCOUNT_KEY_PATH');
+        $folderId = env('GOOGLE_DRIVE_FOLDER_ID');
+        $retentionCount = (int) env('BACKUP_RETENTION_COUNT', 7);
+
+        if (!$serviceAccountPath || !$folderId) {
+            $this->warn('Upload Google Drive dilewati: Variabel GOOGLE_SERVICE_ACCOUNT_KEY_PATH atau GOOGLE_DRIVE_FOLDER_ID belum diset di .env');
+            $this->info('Backup process completed successfully (file tersimpan lokal saja).');
+            return;
         }
-        $this->info("Successfully uploaded to Google Drive: {$googlePath}");
 
-        // Cleanup old backups on Google Drive (keep only the newest one)
-        $this->info('Cleaning up old backups on Google Drive...');
-        $allFiles = $googleDisk->files('Ekstrakurikuler');
-        
-        // Filter only .sql files
-        $sqlFiles = array_filter($allFiles, function($file) {
-            return str_ends_with($file, '.sql');
-        });
+        if (!file_exists($serviceAccountPath)) {
+            $this->warn("Upload Google Drive dilewati: File JSON Service Account tidak ditemukan di path {$serviceAccountPath}");
+            $this->info('Backup process completed successfully (file tersimpan lokal saja).');
+            return;
+        }
 
-        // Sort by timestamp (newest last if named correctly)
-        sort($sqlFiles);
+        try {
+            $this->info('Mengautentikasi ke Google Drive menggunakan Service Account...');
+            
+            $client = new \Google\Client();
+            $client->setAuthConfig($serviceAccountPath);
+            $client->addScope(\Google\Service\Drive::DRIVE);
+            $service = new \Google\Service\Drive($client);
 
-        // Keep the latest 1
-        if (count($sqlFiles) > 1) {
-            $filesToDelete = array_slice($sqlFiles, 0, count($sqlFiles) - 1);
-            foreach ($filesToDelete as $fileToDelete) {
-                $googleDisk->delete($fileToDelete);
-                $this->info("Deleted old backup on Google Drive: {$fileToDelete}");
+            $this->info('Mengunggah file ke Google Drive...');
+            $fileMetadata = new \Google\Service\Drive\DriveFile([
+                'name' => $filename,
+                'parents' => [$folderId]
+            ]);
+
+            // Menggunakan stream untuk efisiensi memori jika file besar
+            $content = file_get_contents($localPath);
+            
+            $uploadedFile = $service->files->create($fileMetadata, [
+                'data' => $content,
+                'mimeType' => 'application/sql',
+                'uploadType' => 'multipart',
+                'fields' => 'id'
+            ]);
+            
+            $this->info("Berhasil diunggah ke Google Drive dengan ID File: {$uploadedFile->id}");
+
+            // -----------------------------------------------------------------
+            // RETENSI / AUTO-DELETE BACKUP LAMA
+            // -----------------------------------------------------------------
+            $this->info("Menjalankan logika retensi (menyimpan {$retentionCount} file terbaru)...");
+            
+            // Mencari file dengan awalan nama yang sama di folder target (tidak dibuang ke trash)
+            $optParams = [
+                'q' => "'{$folderId}' in parents and name contains 'backup_{$dbName}_' and mimeType = 'application/sql' and trashed = false",
+                'orderBy' => 'createdTime desc',
+                'fields' => 'files(id, name, createdTime)'
+            ];
+            
+            $results = $service->files->listFiles($optParams);
+            $files = $results->getFiles();
+            
+            if (count($files) > $retentionCount) {
+                $filesToDelete = array_slice($files, $retentionCount);
+                foreach ($filesToDelete as $fileToDelete) {
+                    $service->files->delete($fileToDelete->getId());
+                    $this->info("Menghapus backup lama di Drive: {$fileToDelete->getName()}");
+                }
+            } else {
+                $this->info("Tidak ada backup lama yang perlu dihapus (total backup: " . count($files) . ").");
             }
-        }
-        
-        // Delete all old .zip files that they have in Google Drive to clean up the existing .zip backups!
-        $zipFiles = array_filter($allFiles, function($file) {
-            return str_ends_with($file, '.zip');
-        });
-        foreach ($zipFiles as $zipFile) {
-            $googleDisk->delete($zipFile);
-            $this->info("Deleted old ZIP backup on Google Drive: {$zipFile}");
+
+        } catch (\Exception $e) {
+            $this->warn("Upload Google Drive gagal: " . $e->getMessage());
         }
 
         $this->info('Backup process completed successfully.');
