@@ -1,51 +1,43 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import Swal from 'sweetalert2';
 
 const page = usePage();
-const show = ref(false);
-const pesan = ref('');
-const tipe = ref('success');
-
 const flash = computed(() => page.props.flash);
-const munculkan = () => {
-    show.value = true;
-    setTimeout(() => (show.value = false), 4000); // hilang otomatis 4 detik
-};
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 4000,
+    timerProgressBar: true,
+    customClass: {
+        popup: 'rounded-xl shadow-xl border border-gray-100',
+        title: 'text-sm font-semibold font-["Poppins"]'
+    },
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+});
+
 watch(flash, (val) => {
     if (val?.success) {
-        pesan.value = val.success;
-        tipe.value = 'success';
-        munculkan();
+        Toast.fire({
+            icon: 'success',
+            title: val.success
+        });
     } else if (val?.error) {
-        pesan.value = val.error;
-        tipe.value = 'error';
-        munculkan();
+        Toast.fire({
+            icon: 'error',
+            title: val.error
+        });
     }
 }, { deep: true, immediate: true });
-
-
 </script>
 
 <template>
-    <div>
-        <Transition
-            enter-active-class="transition ease-out duration-300"
-            enter-from-class="opacity-0 translate-y-2"
-            enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition ease-in duration-200"
-            leave-from-class="opacity-100"
-            leave-to-class="opacity-0">
-            <div v-if="show" class="fixed top-5 right-5 z-50 max-w-sm">
-                <div :class="[
-                    'rounded-xl shadow-lg px-4 py-3 text-sm font-medium flex items-center gap-2',
-                    tipe === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
-                ]">
-                    <span>{{ tipe === 'success' ? '✅' : '⚠️' }}</span>
-                    <span>{{ pesan }}</span>
-                    <button @click="show = false" class="ml-2 opacity-70 hover:opacity-100">✕</button>
-                </div>
-            </div>
-        </Transition>
-    </div>
+    <!-- Template kosong karena rendering UI ditangani sepenuhnya oleh SweetAlert2 -->
+    <div></div>
 </template>
