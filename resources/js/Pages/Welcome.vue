@@ -148,25 +148,25 @@ const mobileMenuOpen = ref(false);
                                 <!-- Box 1 -->
                                 <div class="flex flex-col justify-center rounded-2xl bg-emerald-50 p-5 transition-transform hover:-translate-y-1">
                                     <span class="font-['Poppins'] text-3xl font-black text-emerald-900 sm:text-4xl">{{ stats.ekstra }}</span>
-                                    <span class="mt-1 text-xs font-medium text-emerald-600 sm:text-sm">Pilihan Ekstra</span>
+                                    <span class="mt-1 text-xs font-medium text-emerald-600 sm:text-sm">Ekstrakurikuler</span>
                                 </div>
                                 
                                 <!-- Box 2 -->
                                 <div class="flex flex-col justify-center rounded-2xl bg-amber-50 p-5 transition-transform hover:-translate-y-1">
-                                    <span class="font-['Poppins'] text-3xl font-black text-amber-900 sm:text-4xl">{{ stats.siswa }}</span>
-                                    <span class="mt-1 text-xs font-medium text-amber-600 sm:text-sm">Siswa Aktif</span>
+                                    <span class="font-['Poppins'] text-3xl font-black text-amber-900 sm:text-4xl">{{ stats.siswa_terdaftar }}/{{ stats.siswa }}</span>
+                                    <span class="mt-1 text-xs font-medium text-amber-600 sm:text-sm">Siswa Terdaftar Ekstra</span>
                                 </div>
                                 
                                 <!-- Box 3 -->
                                 <div class="flex flex-col justify-center rounded-2xl bg-blue-50 p-5 transition-transform hover:-translate-y-1">
                                     <span class="font-['Poppins'] text-3xl font-black text-blue-900 sm:text-4xl">{{ stats.pembina }}</span>
-                                    <span class="mt-1 text-xs font-medium text-blue-600 sm:text-sm">Jumlah Pembina</span>
+                                    <span class="mt-1 text-xs font-medium text-blue-600 sm:text-sm">Pembina Ekstrakurikuler</span>
                                 </div>
                                 
                                 <!-- Box 4 -->
                                 <div class="flex flex-col justify-center rounded-2xl bg-purple-50 p-5 transition-transform hover:-translate-y-1">
                                     <span class="font-['Poppins'] text-3xl font-black text-purple-900 sm:text-4xl">{{ stats.pelatih }}</span>
-                                    <span class="mt-1 text-xs font-medium text-purple-600 sm:text-sm">Pelatih Ahli</span>
+                                    <span class="mt-1 text-xs font-medium text-purple-600 sm:text-sm">Pelatih Ekstrakurikuler</span>
                                 </div>
                             </div>
                         </div>

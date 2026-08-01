@@ -28,6 +28,7 @@ Route::get('/', function () {
         'stats' => [
             'ekstra' => \App\Models\Ekstra::count(),
             'siswa' => \App\Models\Siswa::count(),
+            'siswa_terdaftar' => \App\Models\Siswa::whereNotNull('ekstra_id')->count(),
             'pelatih' => \App\Models\User::where('role', 'pelatih')->count(),
             'pembina' => \App\Models\Pembimbing::count(),
         ]
