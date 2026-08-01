@@ -107,7 +107,7 @@ const mobileMenuOpen = ref(false);
                     <div class="text-center lg:text-left">
                         <div class="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 shadow-sm mb-6">
                             <span class="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-                            <span class="text-xs font-semibold text-[#5B6472]">Sistem Terpadu Aktif {{ tahunAktif ? tahunAktif : '-' }}</span>
+                            <span class="text-xs font-semibold text-[#5B6472]">Tahun Pelajaran Aktif {{ tahunAktif ? tahunAktif : '-' }}</span>
                         </div>
 
                         <h1 class="font-['Poppins'] text-5xl font-black leading-[1.1] text-[#0B1B36] tracking-tight sm:text-6xl md:text-7xl">
