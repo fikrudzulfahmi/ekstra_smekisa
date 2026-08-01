@@ -159,8 +159,8 @@ const mobileMenuOpen = ref(false);
                                 
                                 <!-- Box 3 -->
                                 <div class="flex flex-col justify-center rounded-2xl bg-blue-50 p-5 transition-transform hover:-translate-y-1">
-                                    <span class="font-['Poppins'] text-3xl font-black text-blue-900 sm:text-4xl">{{ stats.kegiatan }}</span>
-                                    <span class="mt-1 text-xs font-medium text-blue-600 sm:text-sm">Kegiatan Tercatat</span>
+                                    <span class="font-['Poppins'] text-3xl font-black text-blue-900 sm:text-4xl">{{ stats.pembina }}</span>
+                                    <span class="mt-1 text-xs font-medium text-blue-600 sm:text-sm">Jumlah Pembina</span>
                                 </div>
                                 
                                 <!-- Box 4 -->
