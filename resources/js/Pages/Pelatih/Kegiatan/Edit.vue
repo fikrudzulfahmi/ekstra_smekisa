@@ -2,6 +2,7 @@
 import { reactive, computed, ref, useTemplateRef } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import imageCompression from 'browser-image-compression';
+import heic2any from 'heic2any';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { showErrorAlert } from '@/utils/sweetalert';
@@ -51,16 +52,28 @@ const inputKamera = useTemplateRef('inputKamera');
 const inputFile = useTemplateRef('inputFile');
 
 const handleImageUpload = async (event) => {
-    const file = event.target.files[0];
+    let file = event.target.files[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
+    const isHeic = file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+
+    if (!file.type.startsWith('image/') && !isHeic) {
         showErrorAlert('File harus berupa gambar');
         return;
     }
 
     isCompressing.value = true;
     try {
+        if (isHeic) {
+            const convertedBlob = await heic2any({
+                blob: file,
+                toType: 'image/jpeg',
+                quality: 0.8
+            });
+            const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+            file = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: 'image/jpeg' });
+        }
+
         const options = {
             maxSizeMB: 1,
             maxWidthOrHeight: 1280,
@@ -75,7 +88,7 @@ const handleImageUpload = async (event) => {
         form.foto = newFile;
     } catch (error) {
         console.error('Error compressing image:', error);
-        showErrorAlert('Gagal mengompres gambar. Coba gambar lain atau matikan format HEIC pada kamera.');
+        showErrorAlert('Gagal memproses gambar. Pastikan format didukung atau coba gambar lain.');
     } finally {
         isCompressing.value = false;
     }
